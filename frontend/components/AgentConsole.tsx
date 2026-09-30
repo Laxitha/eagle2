@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { endpoints } from "@/lib/api";
+import { demoAgentChat } from "@/lib/mockData";
 
 interface Details {
   focus?: string;
@@ -110,9 +111,15 @@ export default function AgentConsole() {
         },
       ]);
     } catch {
+      const demo = demoAgentChat(msg);
       setMessages((m) => [
         ...m,
-        { id: _id++, role: "assistant", text: "I couldn't reach the agent service. Is the backend running on :8010?" },
+        {
+          id: _id++,
+          role: "assistant",
+          text: demo.reply,
+          details: { focus: demo.focus, neighbours: demo.neighbours, cases: demo.cases },
+        },
       ]);
     } finally {
       setLoading(false);

@@ -5,6 +5,7 @@ import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import StatCard from "@/components/StatCard";
 import { endpoints, CaseStats } from "@/lib/api";
+import { mockStats } from "@/lib/mockData";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<CaseStats | null>(null);
@@ -14,7 +15,7 @@ export default function DashboardPage() {
     endpoints
       .stats()
       .then((r) => setStats(r.data))
-      .catch(() => setStats(null))
+      .catch(() => setStats(mockStats))
       .finally(() => setLoaded(true));
   }, []);
 

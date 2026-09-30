@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { endpoints, CaseStats, CaseLead } from "@/lib/api";
+import { mockStats, mockCaseLeads } from "@/lib/mockData";
 
 export default function ReportsPage() {
   const [stats, setStats] = useState<CaseStats | null>(null);
@@ -16,7 +17,10 @@ export default function ReportsPage() {
         setStats(s.data);
         setLeads(l.data.leads || []);
       })
-      .catch(() => {})
+      .catch(() => {
+        setStats(mockStats);
+        setLeads(mockCaseLeads);
+      })
       .finally(() => setLoaded(true));
   }, []);
 

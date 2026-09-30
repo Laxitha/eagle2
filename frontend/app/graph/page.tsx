@@ -6,6 +6,7 @@ import AppShell from "@/components/AppShell";
 import GraphView from "@/components/GraphView";
 import EntityPanel from "@/components/EntityPanel";
 import { endpoints, GraphEdge, GraphNode } from "@/lib/api";
+import { mockNodes, mockEdges as mockEdgesData } from "@/lib/mockData";
 
 const TYPES = ["Person", "Phone", "Case", "Vehicle", "Account", "Location"] as const;
 
@@ -24,7 +25,10 @@ export default function GraphPage() {
         setNodes(r.data.nodes || []);
         setEdges(r.data.edges || []);
       })
-      .catch(() => {})
+      .catch(() => {
+        setNodes(mockNodes);
+        setEdges(mockEdgesData);
+      })
       .finally(() => setLoaded(true));
   }, []);
 
