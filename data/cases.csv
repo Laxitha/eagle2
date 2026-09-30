@@ -1,0 +1,13 @@
+case_id,date,description,status,officer,persons,location,category
+FIR-101,2026-06-02,Narcotics trafficking network operating out of Chennai suburbs,active,Insp. R. Balan,"P01,P06",Chennai,Narcotics
+FIR-102,2026-06-05,Cyberfraud complaint - phishing campaign targeting bank customers,active,Insp. S. Nambiar,P07,Delhi,Cybercrime
+FIR-103,2026-06-08,Armed robbery at jewellery store,closed,Insp. K. Rao,"P08,P20",Bangalore,Robbery
+FIR-104,2026-06-10,Financial fraud - shell company siphoning investor funds,active,Insp. M. Chandra,"P02,P12",Hyderabad,Financial Fraud
+FIR-105,2026-06-12,Missing person report - last seen near railway station,active,Insp. R. Balan,P04,Chennai,Missing Person
+FIR-106,2026-06-14,Extortion complaint from local business owner,active,Insp. A. Farooqui,"P05,P16",Chennai,Extortion
+FIR-107,2026-06-16,Suspected human trafficking ring,active,Insp. M. Chandra,P10,Hyderabad,Human Trafficking
+FIR-108,2026-06-18,Stolen vehicle recovery investigation,closed,Insp. J. Thomas,"P03,P18",Kochi,Vehicle Theft
+FIR-109,2026-06-20,Cross-border vehicle smuggling operation,active,Insp. J. Thomas,"P03,P11",Kochi,Smuggling
+FIR-110,2026-06-22,Domestic violence complaint,closed,Insp. S. Nambiar,P13,Kochi,Domestic Violence
+FIR-111,2026-06-24,Counterfeit currency circulation,active,Insp. R. Sinha,P14,Delhi,Counterfeiting
+FIR-112,2026-06-26,Kidnapping for ransom,active,Insp. P. Desai,"P15,P17",Ahmedabad,Kidnapping
