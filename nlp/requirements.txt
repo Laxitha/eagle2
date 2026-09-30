@@ -1,0 +1,9 @@
+spacy
+transformers
+sentence-transformers
+pdfplumber
+pytesseract
+rapidfuzz
+phonetics
+pandas
+numpy

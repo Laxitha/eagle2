@@ -1,0 +1,71 @@
+entity_id,type,location,lat,long,timestamp,source
+P14,person,Bangalore,13.0132,77.6208,2026-06-18 12:21:18,bank branch visit
+P05,person,Hyderabad,17.3763,78.5067,2026-07-18 16:19:53,field report
+P18,person,Ahmedabad,22.9942,72.5424,2026-07-16 09:43:22,vehicle ANPR
+P06,person,Bangalore,12.9758,77.6083,2026-07-16 03:48:22,bank branch visit
+P19,person,Bangalore,13.0159,77.6156,2026-07-14 23:57:53,field report
+P14,person,Chennai,13.085,80.2232,2026-06-10 01:42:03,vehicle ANPR
+P09,person,Hyderabad,17.4334,78.505,2026-06-10 01:44:50,field report
+P07,person,Bangalore,12.9248,77.626,2026-06-07 19:55:43,vehicle ANPR
+P18,person,Delhi,28.6779,77.1309,2026-07-22 22:18:44,CDR tower ping
+P13,person,Delhi,28.6958,77.1313,2026-07-14 10:35:03,CDR tower ping
+P09,person,Hyderabad,17.3971,78.5148,2026-07-26 14:53:14,field report
+P19,person,Bangalore,12.9954,77.5642,2026-07-17 06:18:28,vehicle ANPR
+P03,person,Hyderabad,17.4312,78.5102,2026-06-08 12:02:27,field report
+P18,person,Kochi,9.8942,76.2757,2026-06-17 00:21:29,vehicle ANPR
+P02,person,Hyderabad,17.4279,78.4964,2026-07-20 20:39:53,field report
+P16,person,Bangalore,12.9766,77.5519,2026-07-16 10:33:14,vehicle ANPR
+P17,person,Chennai,13.1113,80.2366,2026-07-05 17:25:05,field report
+P08,person,Hyderabad,17.4013,78.4698,2026-06-19 06:48:39,bank branch visit
+P18,person,Ahmedabad,22.9734,72.5883,2026-06-29 07:57:41,vehicle ANPR
+P02,person,Ahmedabad,23.0611,72.5595,2026-07-21 03:24:16,field report
+P01,person,Bangalore,13.0038,77.5821,2026-07-22 16:28:31,CDR tower ping
+P10,person,Ahmedabad,22.9918,72.5728,2026-07-31 03:10:49,CDR tower ping
+P03,person,Hyderabad,17.402,78.5141,2026-07-26 21:27:53,CDR tower ping
+P07,person,Bangalore,13.0045,77.6325,2026-07-18 13:41:52,CDR tower ping
+P05,person,Chennai,13.0786,80.2539,2026-06-06 02:03:11,field report
+P18,person,Chennai,13.0902,80.2435,2026-06-17 13:24:28,bank branch visit
+P14,person,Kochi,9.8829,76.2846,2026-07-05 00:41:46,CDR tower ping
+P19,person,Chennai,13.1028,80.228,2026-07-30 16:06:18,field report
+P20,person,Chennai,13.0609,80.3134,2026-06-25 12:52:42,CDR tower ping
+P16,person,Hyderabad,17.3883,78.4503,2026-06-26 17:18:40,vehicle ANPR
+P10,person,Ahmedabad,23.0612,72.6179,2026-07-26 23:41:23,CDR tower ping
+P18,person,Bangalore,12.9357,77.5488,2026-07-07 19:25:34,CDR tower ping
+P10,person,Hyderabad,17.4098,78.5271,2026-06-23 06:26:57,vehicle ANPR
+P06,person,Hyderabad,17.3571,78.5202,2026-06-13 03:11:42,CDR tower ping
+P18,person,Delhi,28.7186,77.0598,2026-07-13 02:16:06,vehicle ANPR
+P19,person,Delhi,28.7493,77.0882,2026-07-13 20:15:06,field report
+P20,person,Chennai,13.1227,80.2525,2026-06-29 10:39:42,field report
+P19,person,Hyderabad,17.3916,78.4731,2026-06-21 13:10:00,field report
+P08,person,Hyderabad,17.4062,78.5008,2026-06-18 11:08:43,field report
+P16,person,Delhi,28.6986,77.13,2026-07-02 17:06:11,CDR tower ping
+P09,person,Hyderabad,17.4241,78.4563,2026-07-17 20:04:46,CDR tower ping
+P01,person,Bangalore,12.9848,77.6259,2026-07-08 12:49:37,vehicle ANPR
+P02,person,Bangalore,12.9477,77.634,2026-07-05 15:41:49,vehicle ANPR
+P12,person,Delhi,28.6764,77.1297,2026-07-17 09:08:29,CDR tower ping
+P13,person,Kochi,9.9314,76.2836,2026-07-25 19:43:10,vehicle ANPR
+P15,person,Hyderabad,17.3529,78.5316,2026-07-13 04:47:46,bank branch visit
+P12,person,Chennai,13.0546,80.2695,2026-06-05 08:23:14,CDR tower ping
+P07,person,Bangalore,13.0124,77.5807,2026-07-01 14:56:02,CDR tower ping
+P11,person,Chennai,13.1031,80.2728,2026-07-24 08:53:47,field report
+P19,person,Bangalore,12.9786,77.5823,2026-06-25 11:37:41,CDR tower ping
+P17,person,Kochi,9.9188,76.308,2026-07-04 12:22:52,field report
+P16,person,Delhi,28.7428,77.0532,2026-07-27 04:28:10,vehicle ANPR
+P03,person,Bangalore,12.9859,77.5658,2026-06-12 05:23:38,CDR tower ping
+P08,person,Delhi,28.7352,77.1245,2026-07-01 21:30:30,vehicle ANPR
+P19,person,Hyderabad,17.3997,78.4778,2026-06-16 01:08:36,vehicle ANPR
+P05,person,Ahmedabad,23.0238,72.6105,2026-06-10 01:10:16,vehicle ANPR
+P17,person,Delhi,28.714,77.1089,2026-06-02 23:46:42,field report
+P03,person,Hyderabad,17.3799,78.536,2026-07-26 15:10:14,bank branch visit
+P20,person,Hyderabad,17.4145,78.5187,2026-06-12 19:42:32,field report
+P06,person,Ahmedabad,23.0411,72.6136,2026-07-09 18:04:14,bank branch visit
+P13,person,Hyderabad,17.3459,78.4569,2026-07-26 16:43:26,vehicle ANPR
+P20,person,Chennai,13.0504,80.3109,2026-07-09 01:56:50,CDR tower ping
+P03,person,Delhi,28.72,77.1427,2026-07-05 00:57:49,bank branch visit
+P17,person,Delhi,28.6911,77.0568,2026-07-04 13:14:51,bank branch visit
+P13,person,Kochi,9.9401,76.2914,2026-07-19 22:36:06,bank branch visit
+P05,person,Kochi,9.9289,76.2406,2026-07-25 02:18:38,bank branch visit
+P09,person,Hyderabad,17.3355,78.5111,2026-06-01 18:33:07,CDR tower ping
+P13,person,Ahmedabad,22.993,72.6018,2026-06-27 11:06:09,bank branch visit
+P19,person,Kochi,9.9073,76.2709,2026-07-07 11:39:17,bank branch visit
+P07,person,Delhi,28.7093,77.1083,2026-06-12 11:35:35,bank branch visit
