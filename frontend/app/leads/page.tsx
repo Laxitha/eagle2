@@ -53,15 +53,15 @@ export default function LeadsPage() {
 
   return (
     <AppShell>
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-2xl font-bold text-white">Investigative Leads</h1>
-          <p className="text-slate-500 text-sm">AI-generated, evidence-backed, explainable</p>
+          <h1 className="text-xl font-semibold text-white tracking-tight">Investigative Leads</h1>
+          <p className="text-slate-600 text-xs mt-0.5">AI-generated, evidence-backed, explainable</p>
         </div>
         {leads.length > 0 && (
           <button
             onClick={fetchLeads}
-            className="text-xs text-slate-400 hover:text-white border border-slate-700 rounded-lg px-3 py-1.5 transition-colors"
+            className="text-[11px] text-slate-500 hover:text-slate-300 border border-slate-800/60 rounded-lg px-3 py-1.5 transition-colors"
           >
             Refresh
           </button>
@@ -69,9 +69,9 @@ export default function LeadsPage() {
       </div>
 
       {empty ? (
-        <div className="bg-surface border border-slate-800 rounded-xl p-8 text-center mt-6">
+        <div className="card p-10 text-center">
           <p className="text-slate-300 mb-1">No leads yet.</p>
-          <p className="text-sm text-slate-500 mb-5">
+          <p className="text-xs text-slate-600 mb-5">
             Leads are generated automatically when case data is uploaded and analyzed.
           </p>
           <Link href="/upload" className="inline-block rounded-lg bg-blue px-4 py-2 text-sm font-medium text-white">
@@ -81,31 +81,23 @@ export default function LeadsPage() {
       ) : (
         <>
           {/* Stats row */}
-          <div className="grid grid-cols-5 gap-3 my-5">
-            <div className="bg-surface border border-slate-800 rounded-lg px-4 py-3">
-              <span className="text-[10px] uppercase tracking-wider text-slate-500 block">Total</span>
-              <span className="text-2xl font-bold text-white">{leads.length}</span>
-            </div>
-            <div className="bg-surface border border-red-500/20 rounded-lg px-4 py-3">
-              <span className="text-[10px] uppercase tracking-wider text-red-400/70 block">Critical</span>
-              <span className="text-2xl font-bold text-red-400">{criticalCount}</span>
-            </div>
-            <div className="bg-surface border border-orange-500/20 rounded-lg px-4 py-3">
-              <span className="text-[10px] uppercase tracking-wider text-orange-400/70 block">High Risk</span>
-              <span className="text-2xl font-bold text-orange-400">{highCount}</span>
-            </div>
-            <div className="bg-surface border border-amber-500/20 rounded-lg px-4 py-3">
-              <span className="text-[10px] uppercase tracking-wider text-amber-400/70 block">Pending</span>
-              <span className="text-2xl font-bold text-amber">{pendingCount}</span>
-            </div>
-            <div className="bg-surface border border-red-500/20 rounded-lg px-4 py-3">
-              <span className="text-[10px] uppercase tracking-wider text-red-400/70 block">Cross-Case</span>
-              <span className="text-2xl font-bold text-red-400">{crossCaseCount}</span>
-            </div>
+          <div className="grid grid-cols-5 gap-2.5 mb-5">
+            {[
+              { label: "Total", value: leads.length, color: "text-white", border: "border-slate-800/40" },
+              { label: "Critical", value: criticalCount, color: "text-red-400", border: "border-red-500/15" },
+              { label: "High Risk", value: highCount, color: "text-orange-400", border: "border-orange-500/15" },
+              { label: "Pending", value: pendingCount, color: "text-amber", border: "border-amber-500/15" },
+              { label: "Cross-Case", value: crossCaseCount, color: "text-red-400", border: "border-red-500/15" },
+            ].map(s => (
+              <div key={s.label} className={`card px-4 py-3 !border-${s.border.split('-').slice(1).join('-')}`} style={{ borderColor: s.border.includes('red') ? 'rgba(239,68,68,0.15)' : s.border.includes('orange') ? 'rgba(249,115,22,0.15)' : s.border.includes('amber') ? 'rgba(245,158,11,0.15)' : undefined }}>
+                <span className="text-[10px] uppercase tracking-wider text-slate-600 block">{s.label}</span>
+                <span className={`text-xl font-bold ${s.color}`}>{s.value}</span>
+              </div>
+            ))}
           </div>
 
           {/* Filters */}
-          <div className="flex gap-2 mb-5">
+          <div className="flex gap-1.5 mb-5">
             {([
               { key: "all", label: "All Leads" },
               { key: "critical", label: "Critical" },
@@ -116,10 +108,10 @@ export default function LeadsPage() {
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                className={`text-[11px] px-3 py-1.5 rounded-lg border transition-colors ${
                   filter === f.key
-                    ? "border-blue text-blue bg-blue/10"
-                    : "border-slate-700 text-slate-500 hover:text-slate-300"
+                    ? "border-blue/30 text-blue bg-blue/[0.06]"
+                    : "border-slate-800/60 text-slate-600 hover:text-slate-400"
                 }`}
               >
                 {f.label}
@@ -128,14 +120,14 @@ export default function LeadsPage() {
           </div>
 
           {/* Lead cards */}
-          <div className="space-y-5">
+          <div className="space-y-4">
             {filtered.map((lead) => (
               <LeadCard key={lead.id} lead={lead} onVerify={onVerify} />
             ))}
           </div>
 
           {filtered.length === 0 && (
-            <div className="text-center py-8 text-slate-500 text-sm">
+            <div className="text-center py-8 text-slate-600 text-xs">
               No leads match this filter.
             </div>
           )}

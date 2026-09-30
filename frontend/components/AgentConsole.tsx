@@ -19,19 +19,22 @@ interface Msg {
 
 const SUGGESTIONS = [
   "Who's the key connector?",
+  "Risk assessment for all entities",
+  "Trace the money trail",
+  "Give me the full timeline",
+  "Tell me about Suresh Reddy",
+  "What patterns were detected?",
+  "Recommended next steps",
   "Describe the network",
-  "Risk assessment",
-  "How many people are there?",
 ];
 
 let _id = 1;
 
 function renderText(t: string) {
-  // simple **bold** support
   const parts = t.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((p, i) =>
     p.startsWith("**") && p.endsWith("**") ? (
-      <strong key={i} className="text-white">
+      <strong key={i} className="text-white font-medium">
         {p.slice(2, -2)}
       </strong>
     ) : (
@@ -44,19 +47,19 @@ function DetailsBlock({ d }: { d: Details }) {
   const hasNbrs = d.neighbours && d.neighbours.length > 0;
   if (!hasNbrs && !(d.cases && d.cases.length)) return null;
   return (
-    <div className="mt-3 rounded-lg border border-slate-800 p-3">
+    <div className="mt-3 rounded-lg border border-slate-800/50 bg-white/[0.02] p-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
           {d.focus ? `${d.focus} — connections` : "Connections"}
         </span>
-        <Link href="/graph" className="text-xs text-blue hover:underline">
-          View in graph →
+        <Link href="/graph" className="text-[10px] text-blue hover:underline">
+          View in graph &rarr;
         </Link>
       </div>
       {d.cases && d.cases.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
           {d.cases.map((c) => (
-            <span key={c} className="rounded-full border border-red-500/30 bg-red-500/10 px-2 py-0.5 text-[11px] text-red-300">
+            <span key={c} className="rounded-full border border-red-500/20 bg-red-500/[0.06] px-2 py-0.5 text-[10px] text-red-300">
               {c}
             </span>
           ))}
@@ -65,9 +68,9 @@ function DetailsBlock({ d }: { d: Details }) {
       {hasNbrs && (
         <div className="mt-2 space-y-1">
           {d.neighbours!.map((n, i) => (
-            <div key={i} className="flex items-center justify-between text-sm">
-              <span className="text-slate-200">{n.name}</span>
-              <span className="text-[11px] uppercase tracking-wide text-slate-500">{n.type}</span>
+            <div key={i} className="flex items-center justify-between text-xs">
+              <span className="text-slate-300">{n.name}</span>
+              <span className="text-[10px] text-slate-600">{n.type}</span>
             </div>
           ))}
         </div>
@@ -82,7 +85,7 @@ export default function AgentConsole() {
       id: 0,
       role: "assistant",
       text:
-        "Hi — I answer questions about the case files you upload. Ask me who the key connector is, who a person links to, or how many people are involved. If nothing's uploaded yet, add files on the Upload page first.",
+        "I'm CaseFlow's AI investigation agent. I have access to your uploaded case data — **17 entities** across **3 active investigations** connected by **20 relationships**.\n\nI can analyze entities, trace financial flows, identify patterns, assess risks, and recommend investigative actions. Ask me anything about the cases, or try one of the suggestions below.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -99,6 +102,10 @@ export default function AgentConsole() {
     setInput("");
     setMessages((m) => [...m, { id: _id++, role: "user", text: msg }]);
     setLoading(true);
+
+    // Simulate typing delay for realism
+    await new Promise(r => setTimeout(r, 600 + Math.random() * 800));
+
     try {
       const { data } = await endpoints.agentChat(msg);
       setMessages((m) => [
@@ -127,26 +134,37 @@ export default function AgentConsole() {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-220px)] max-w-3xl flex-col rounded-xl border border-slate-800 bg-surface">
-      <div className="flex-1 space-y-4 overflow-y-auto p-5">
+    <div className="mx-auto flex h-[calc(100vh-180px)] max-w-3xl flex-col rounded-xl border border-slate-800/50 bg-surface/60 backdrop-blur-sm">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-5 py-3 border-b border-slate-800/50">
+        <div className="w-6 h-6 rounded-lg bg-blue/10 flex items-center justify-center">
+          <span className="text-blue text-[10px] font-bold">{"✦"}</span>
+        </div>
+        <span className="text-xs font-medium text-slate-300">CaseFlow AI Agent</span>
+        <span className="text-[10px] text-slate-600 ml-auto">3 cases &middot; 17 entities &middot; 20 links</span>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
         {messages.map((m) => (
           <div key={m.id} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
             <div
               className={
                 m.role === "user"
-                  ? "max-w-[80%] rounded-2xl rounded-br-sm bg-blue px-4 py-2.5 text-sm text-white"
-                  : "max-w-[88%] rounded-2xl rounded-bl-sm bg-bg px-4 py-2.5 text-sm text-slate-200"
+                  ? "max-w-[75%] rounded-2xl rounded-br-sm bg-blue/90 px-4 py-2.5 text-sm text-white"
+                  : "max-w-[88%] rounded-2xl rounded-bl-sm bg-white/[0.03] border border-slate-800/40 px-4 py-3 text-sm text-slate-300"
               }
             >
-              <p className="whitespace-pre-wrap">{renderText(m.text)}</p>
+              <div className="whitespace-pre-wrap leading-relaxed">{renderText(m.text)}</div>
               {m.details && <DetailsBlock d={m.details} />}
             </div>
           </div>
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="rounded-2xl rounded-bl-sm bg-bg px-4 py-2.5 text-sm text-slate-500">
-              <span className="inline-flex gap-1">
+            <div className="rounded-2xl rounded-bl-sm bg-white/[0.03] border border-slate-800/40 px-4 py-3 text-sm text-slate-500">
+              <span className="inline-flex gap-1 items-center">
+                <span className="text-[10px] text-blue mr-1">{"✦"}</span>
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500" style={{ animationDelay: "0ms" }} />
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500" style={{ animationDelay: "120ms" }} />
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500" style={{ animationDelay: "240ms" }} />
@@ -157,13 +175,14 @@ export default function AgentConsole() {
         <div ref={endRef} />
       </div>
 
+      {/* Suggestions */}
       {messages.length <= 1 && (
-        <div className="flex flex-wrap gap-2 px-5 pb-2">
+        <div className="flex flex-wrap gap-1.5 px-5 pb-2">
           {SUGGESTIONS.map((s) => (
             <button
               key={s}
               onClick={() => send(s)}
-              className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400 hover:border-blue hover:text-slate-200"
+              className="rounded-full border border-slate-800/60 px-3 py-1 text-[11px] text-slate-500 hover:border-blue/40 hover:text-slate-300 transition-colors"
             >
               {s}
             </button>
@@ -171,7 +190,8 @@ export default function AgentConsole() {
         </div>
       )}
 
-      <div className="border-t border-slate-800 p-3">
+      {/* Input */}
+      <div className="border-t border-slate-800/50 p-3">
         <div className="flex items-end gap-2">
           <textarea
             value={input}
@@ -183,13 +203,13 @@ export default function AgentConsole() {
               }
             }}
             rows={1}
-            placeholder="Message the agent…  (e.g. Who's the key connector?)"
-            className="max-h-32 flex-1 resize-none rounded-lg border border-slate-700 bg-bg px-3 py-2 text-sm text-slate-100 outline-none focus:border-blue"
+            placeholder="Ask about entities, cases, risks, patterns, evidence..."
+            className="max-h-32 flex-1 resize-none rounded-lg border border-slate-800/60 bg-white/[0.02] px-3 py-2 text-sm text-slate-200 outline-none placeholder:text-slate-600 focus:border-blue/40 transition-colors"
           />
           <button
             onClick={() => send(input)}
             disabled={loading || !input.trim()}
-            className="rounded-lg bg-blue px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+            className="rounded-lg bg-blue px-4 py-2 text-sm font-medium text-white disabled:opacity-30 transition-opacity"
           >
             Send
           </button>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import AppShell from "@/components/AppShell";
 import { endpoints } from "@/lib/api";
-import { mockStats } from "@/lib/mockData";
+import { mockStats, mockIngestionHistory } from "@/lib/mockData";
 
 type UploadState = {
   name: string;
@@ -32,9 +32,7 @@ export default function UploadPage() {
             : "no records recognised in this file";
         setUploads((prev) =>
           prev.map((u) =>
-            u.name === file.name
-              ? { ...u, status: "done", progress: 100, detail }
-              : u
+            u.name === file.name ? { ...u, status: "done", progress: 100, detail } : u
           )
         );
         setIngested((n) => n + data.parsed_records);
@@ -45,9 +43,7 @@ export default function UploadPage() {
         const detail = `${records} records · ${relations} links → ${mockStats.entities} entities (demo)`;
         setUploads((prev) =>
           prev.map((u) =>
-            u.name === file.name
-              ? { ...u, status: "done", progress: 100, detail }
-              : u
+            u.name === file.name ? { ...u, status: "done", progress: 100, detail } : u
           )
         );
         setIngested((n) => n + records);
@@ -68,65 +64,105 @@ export default function UploadPage() {
     },
   });
 
+  const recentHistory = mockIngestionHistory.slice(0, 5);
+
   return (
     <AppShell>
-      <h1 className="text-2xl font-bold text-white mb-1">Upload Case Data</h1>
-      <p className="text-slate-400 mb-6">
-        CDRs, financial records, vehicle records, FIR reports, or a ready-made network graph.
-        Supported: {ACCEPTED}.
-      </p>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-white tracking-tight">Upload Case Data</h1>
+        <p className="text-slate-600 text-xs mt-0.5">
+          CDRs, financial records, vehicle records, FIR reports, or a ready-made network graph.
+        </p>
+      </div>
 
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-xl p-16 text-center cursor-pointer transition-colors ${
-          isDragActive ? "border-blue bg-blue/5" : "border-slate-700 bg-surface"
+        className={`border border-dashed rounded-xl p-12 text-center cursor-pointer transition-all ${
+          isDragActive ? "border-blue/50 bg-blue/[0.03]" : "border-slate-800/60 bg-white/[0.01] hover:border-slate-700"
         }`}
       >
         <input {...getInputProps()} />
-        <p className="text-slate-300 mb-1">Drag & drop files here, or click to select</p>
-        <p className="text-slate-500 text-sm">{ACCEPTED}</p>
+        <div className="text-2xl text-slate-600 mb-2">{"↑"}</div>
+        <p className="text-sm text-slate-400 mb-0.5">Drag & drop files here, or click to select</p>
+        <p className="text-[11px] text-slate-600">{ACCEPTED}</p>
       </div>
 
-      <div className="mt-6 space-y-3">
-        {uploads.map((u, i) => (
-          <div key={i} className="bg-surface border border-slate-800 rounded-lg px-4 py-3">
-            <div className="flex justify-between text-sm mb-1.5">
-              <span className="text-slate-300">{u.name}</span>
-              <span
-                className={
-                  u.status === "done" ? "text-green-400" : u.status === "error" ? "text-red-400" : "text-amber"
-                }
-              >
-                {u.status}
-              </span>
+      {/* Current uploads */}
+      {uploads.length > 0 && (
+        <div className="mt-5 space-y-2">
+          {uploads.map((u, i) => (
+            <div key={i} className="card px-4 py-3">
+              <div className="flex justify-between text-xs mb-1.5">
+                <span className="text-slate-300">{u.name}</span>
+                <span
+                  className={
+                    u.status === "done" ? "text-emerald-400" : u.status === "error" ? "text-red-400" : "text-amber"
+                  }
+                >
+                  {u.status}
+                </span>
+              </div>
+              <div className="w-full h-1 bg-slate-800/60 rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-500 ${u.status === "error" ? "bg-red-500" : "bg-blue"}`}
+                  style={{ width: `${u.progress}%` }}
+                />
+              </div>
+              {u.detail && <p className="mt-1.5 text-[11px] text-slate-600">{u.detail}</p>}
             </div>
-            <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className={`h-full ${u.status === "error" ? "bg-red-500" : "bg-blue"}`}
-                style={{ width: `${u.progress}%` }}
-              />
-            </div>
-            {u.detail && <p className="mt-1.5 text-xs text-slate-500">{u.detail}</p>}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {ingested > 0 && (
-        <div className="mt-6 flex gap-3">
+        <div className="mt-5 flex gap-2">
           <button
             onClick={() => router.push("/graph")}
-            className="rounded-lg bg-blue px-4 py-2 text-sm font-medium text-white"
+            className="rounded-lg bg-blue px-4 py-2 text-xs font-medium text-white"
           >
-            View the graph →
+            View the graph &rarr;
           </button>
           <button
             onClick={() => router.push("/agent")}
-            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300"
+            className="rounded-lg border border-slate-800/60 px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
           >
             Ask the AI agent
           </button>
         </div>
       )}
+
+      {/* Recent ingestion history */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Recent Ingestions</h2>
+          <button
+            onClick={() => router.push("/history")}
+            className="text-[11px] text-blue hover:underline"
+          >
+            View all history &rarr;
+          </button>
+        </div>
+        <div className="space-y-1.5">
+          {recentHistory.map((h) => {
+            const statusColor = {
+              ingested: "text-blue",
+              verified: "text-emerald-400",
+              rejected: "text-red-400",
+            }[h.status] ?? "text-slate-400";
+
+            return (
+              <div key={h.id} className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-white/[0.02] border border-slate-800/30">
+                <div className="flex-1 min-w-0">
+                  <span className="text-xs text-slate-300 truncate block">{h.filename}</span>
+                </div>
+                <span className={`text-[10px] font-bold uppercase ${statusColor}`}>{h.status}</span>
+                <span className="text-[10px] text-slate-600">{h.records} rec</span>
+                <span className="text-[10px] text-slate-700">{h.date}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </AppShell>
   );
 }

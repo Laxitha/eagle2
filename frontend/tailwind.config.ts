@@ -8,8 +8,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "#0f172a",
-        surface: "#1e293b",
+        bg: "#060a13",
+        surface: "#0d1320",
+        panel: "#111827",
         blue: "#3b82f6",
         amber: "#f59e0b",
         entity: {
@@ -20,6 +21,9 @@ const config: Config = {
           account: "#a855f7",
           location: "#eab308",
         },
+      },
+      transitionDuration: {
+        "600": "600ms",
       },
     },
   },

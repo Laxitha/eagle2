@@ -22,7 +22,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-bg">
       <Sidebar />
-      <main className="flex-1 p-8 overflow-x-hidden">{children}</main>
+      <main className="flex-1 p-7 overflow-x-hidden animate-[fadeIn_0.3s_ease-out]">
+        {children}
+      </main>
     </div>
   );
 }

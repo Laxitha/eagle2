@@ -63,35 +63,35 @@ export default function GraphPage() {
   return (
     <AppShell>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-white">Knowledge Graph</h1>
-        <div className="flex items-center gap-3">
+        <h1 className="text-xl font-semibold text-white tracking-tight">Knowledge Graph</h1>
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAnalysis(!showAnalysis)}
-            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+            className={`flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-lg border transition-colors ${
               showAnalysis
-                ? "border-purple-500/40 text-purple-400 bg-purple-500/10"
-                : "border-slate-700 text-slate-500 hover:text-slate-300"
+                ? "border-purple-500/30 text-purple-400 bg-purple-500/[0.06]"
+                : "border-slate-800/60 text-slate-600 hover:text-slate-400"
             }`}
           >
-            <span className="text-[10px] font-bold">AI</span>
+            <span className="text-[9px] font-bold">AI</span>
             Analysis
           </button>
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search entities..."
-            className="bg-surface border border-slate-800 rounded-lg px-3 py-2 text-sm text-white w-64 focus:outline-none focus:border-blue"
+            className="bg-white/[0.03] border border-slate-800/60 rounded-lg px-3 py-1.5 text-xs text-white w-52 focus:outline-none focus:border-blue/40 placeholder:text-slate-600 transition-colors"
           />
         </div>
       </div>
 
-      <div className="flex gap-2 mb-4 flex-wrap">
+      <div className="flex gap-1.5 mb-4 flex-wrap">
         {TYPES.map((t) => (
           <button
             key={t}
             onClick={() => toggleType(t)}
-            className={`text-xs px-3 py-1.5 rounded-full border ${
-              activeTypes.has(t) ? "border-blue text-blue bg-blue/10" : "border-slate-700 text-slate-500"
+            className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+              activeTypes.has(t) ? "border-blue/30 text-blue bg-blue/[0.06]" : "border-slate-800/60 text-slate-600"
             }`}
           >
             {t}
@@ -100,16 +100,16 @@ export default function GraphPage() {
       </div>
 
       {empty ? (
-        <div className="bg-surface border border-slate-800 rounded-xl h-[600px] flex flex-col items-center justify-center">
-          <p className="text-slate-300 mb-1">The graph is empty.</p>
-          <p className="text-sm text-slate-500 mb-5">Upload case files to build the network.</p>
+        <div className="card h-[600px] flex flex-col items-center justify-center">
+          <p className="text-slate-400 mb-1">The graph is empty.</p>
+          <p className="text-xs text-slate-600 mb-5">Upload case files to build the network.</p>
           <Link href="/upload" className="rounded-lg bg-blue px-4 py-2 text-sm font-medium text-white">
-            Upload case data →
+            Upload case data &rarr;
           </Link>
         </div>
       ) : (
-        <div className="flex gap-4">
-          <div className="flex-1 bg-surface border border-slate-800 rounded-xl h-[600px]">
+        <div className="flex gap-3">
+          <div className="flex-1 card h-[600px] overflow-hidden">
             <GraphView nodes={filteredNodes} edges={filteredEdges} onNodeClick={setSelectedId} />
           </div>
           {showAnalysis && (
@@ -127,7 +127,7 @@ export default function GraphPage() {
       )}
 
       {selectedNode && showAnalysis && (
-        <div className="mt-4">
+        <div className="mt-3">
           <EntityPanel
             node={selectedNode}
             edges={edges}

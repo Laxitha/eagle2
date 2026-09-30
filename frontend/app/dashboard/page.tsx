@@ -21,59 +21,57 @@ export default function DashboardPage() {
 
   const empty = loaded && (!stats || stats.records === 0);
   const criticalRisks = mockRiskAnalysis.filter(r => r.risk_level === "critical" || r.risk_level === "high");
-  const criticalPatterns = mockPatterns.filter(p => p.severity === "critical");
 
   return (
     <AppShell>
-      <h1 className="text-2xl font-bold text-white mb-1">Dashboard</h1>
-      <p className="text-slate-500 text-sm mb-6">
-        Evidence → Reason → Action
-      </p>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-white tracking-tight">Dashboard</h1>
+        <p className="text-slate-600 text-xs mt-0.5">Evidence &rarr; Reason &rarr; Action</p>
+      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-5 gap-3 mb-6">
         <StatCard label="Entities" value={stats?.entities ?? 0} />
         <StatCard label="Relationships" value={stats?.relationships ?? 0} accent="amber" />
-        <StatCard label="Cases" value={stats?.cases ?? 0} />
-        <StatCard label="Files" value={stats?.files ?? 0} />
-        <StatCard label="Records" value={stats?.records ?? 0} />
+        <StatCard label="Cases" value={stats?.cases ?? 0} accent="red" />
+        <StatCard label="Files" value={stats?.files ?? 0} accent="purple" />
+        <StatCard label="Records" value={stats?.records ?? 0} accent="green" />
       </div>
 
       {empty ? (
-        <div className="bg-surface border border-slate-800 rounded-xl p-8 text-center">
-          <h2 className="text-lg font-semibold text-white mb-1">No data yet</h2>
-          <p className="text-sm text-slate-400 mb-5">
-            Upload case files to build the graph. Nothing is shown until you do.
+        <div className="card p-10 text-center">
+          <h2 className="text-base font-semibold text-white mb-1">No data yet</h2>
+          <p className="text-sm text-slate-500 mb-5">
+            Upload case files to build the graph.
           </p>
           <Link
             href="/upload"
             className="inline-block rounded-lg bg-blue px-4 py-2 text-sm font-medium text-white"
           >
-            Upload case data →
+            Upload case data &rarr;
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-2 gap-4">
           {/* Risk Alerts */}
-          <div className="bg-surface border border-slate-800 rounded-xl p-5">
+          <div className="card p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <h2 className="text-sm font-semibold text-white">Risk Alerts</h2>
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                <h2 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Risk Alerts</h2>
               </div>
-              <Link href="/leads" className="text-xs text-blue hover:underline">View leads →</Link>
+              <Link href="/leads" className="text-[11px] text-blue hover:underline">View leads &rarr;</Link>
             </div>
             <div className="space-y-2">
               {criticalRisks.map(r => {
-                const color = r.risk_level === "critical" ? "border-red-500/30 bg-red-500/5" : "border-orange-500/30 bg-orange-500/5";
+                const color = r.risk_level === "critical" ? "border-red-500/20 bg-red-500/[0.03]" : "border-orange-500/20 bg-orange-500/[0.03]";
                 const textColor = r.risk_level === "critical" ? "text-red-400" : "text-orange-400";
                 return (
                   <div key={r.entity_id} className={`rounded-lg border p-3 ${color}`}>
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-0.5">
                       <span className="text-sm font-medium text-white">{r.entity_name}</span>
                       <span className={`text-[10px] font-bold uppercase ${textColor}`}>{r.risk_level}</span>
                     </div>
-                    <p className="text-xs text-slate-400">{r.factors[0]}</p>
+                    <p className="text-[11px] text-slate-500">{r.factors[0]}</p>
                   </div>
                 );
               })}
@@ -81,27 +79,27 @@ export default function DashboardPage() {
           </div>
 
           {/* Critical Patterns */}
-          <div className="bg-surface border border-slate-800 rounded-xl p-5">
+          <div className="card p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded bg-purple-500/20 flex items-center justify-center">
-                  <span className="text-purple-400 text-[10px] font-bold">AI</span>
+                <div className="w-5 h-5 rounded bg-purple-500/10 flex items-center justify-center">
+                  <span className="text-purple-400 text-[9px] font-bold">AI</span>
                 </div>
-                <h2 className="text-sm font-semibold text-white">AI Detected Patterns</h2>
+                <h2 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">AI Patterns</h2>
               </div>
-              <Link href="/graph" className="text-xs text-blue hover:underline">View graph →</Link>
+              <Link href="/graph" className="text-[11px] text-blue hover:underline">View graph &rarr;</Link>
             </div>
             <div className="space-y-2">
               {mockPatterns.slice(0, 3).map(p => {
                 const sevColor = {
-                  critical: "border-l-red-500",
-                  high: "border-l-orange-500",
-                  medium: "border-l-amber-500",
+                  critical: "border-l-red-500/60",
+                  high: "border-l-orange-500/60",
+                  medium: "border-l-amber-500/60",
                 }[p.severity];
                 return (
-                  <div key={p.id} className={`border-l-2 rounded-r-lg bg-bg p-3 ${sevColor}`}>
-                    <div className="text-xs font-semibold text-white mb-0.5">{p.title}</div>
-                    <p className="text-[11px] text-slate-500 line-clamp-2">{p.description}</p>
+                  <div key={p.id} className={`border-l-2 rounded-r-lg bg-white/[0.02] p-3 ${sevColor}`}>
+                    <div className="text-xs font-medium text-white mb-0.5">{p.title}</div>
+                    <p className="text-[11px] text-slate-600 line-clamp-2">{p.description}</p>
                   </div>
                 );
               })}
@@ -109,10 +107,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Top Leads */}
-          <div className="bg-surface border border-slate-800 rounded-xl p-5">
+          <div className="card p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-white">Top Investigative Leads</h2>
-              <Link href="/leads" className="text-xs text-blue hover:underline">All leads →</Link>
+              <h2 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Top Leads</h2>
+              <Link href="/leads" className="text-[11px] text-blue hover:underline">All leads &rarr;</Link>
             </div>
             <div className="space-y-2">
               {mockEnrichedLeads.slice(0, 3).map(l => {
@@ -123,16 +121,15 @@ export default function DashboardPage() {
                   low: "text-green-400",
                 }[l.risk_level];
                 return (
-                  <div key={l.id} className="flex items-center gap-3 bg-bg rounded-lg p-3">
-                    <div className="text-lg font-bold text-amber w-8 text-center">{(l.score * 100).toFixed(0)}</div>
-                    <div className="flex-1">
+                  <div key={l.id} className="flex items-center gap-3 bg-white/[0.02] rounded-lg p-3">
+                    <div className="text-base font-bold text-amber w-7 text-center">{(l.score * 100).toFixed(0)}</div>
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-white font-medium">{l.entity_name}</span>
                         <span className={`text-[10px] font-bold uppercase ${riskColor}`}>{l.risk_level}</span>
                       </div>
-                      <p className="text-[11px] text-slate-500 line-clamp-1">{l.reason}</p>
+                      <p className="text-[11px] text-slate-600 truncate">{l.reason}</p>
                     </div>
-                    <div className="text-[10px] text-slate-600">{l.evidence.length} items</div>
                   </div>
                 );
               })}
@@ -140,29 +137,21 @@ export default function DashboardPage() {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-surface border border-slate-800 rounded-xl p-5">
-            <h2 className="text-sm font-semibold text-white mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-2 gap-3">
-              <Link href="/upload" className="bg-bg rounded-lg p-4 hover:bg-slate-800/80 transition-colors text-center">
-                <div className="text-2xl mb-1">📁</div>
-                <div className="text-xs font-medium text-white">Upload Data</div>
-                <div className="text-[10px] text-slate-500">CDR, FIR, Financial</div>
-              </Link>
-              <Link href="/agent" className="bg-bg rounded-lg p-4 hover:bg-slate-800/80 transition-colors text-center">
-                <div className="text-2xl mb-1">🤖</div>
-                <div className="text-xs font-medium text-white">AI Agent</div>
-                <div className="text-[10px] text-slate-500">Ask questions</div>
-              </Link>
-              <Link href="/graph" className="bg-bg rounded-lg p-4 hover:bg-slate-800/80 transition-colors text-center">
-                <div className="text-2xl mb-1">🕸️</div>
-                <div className="text-xs font-medium text-white">Knowledge Graph</div>
-                <div className="text-[10px] text-slate-500">Explore network</div>
-              </Link>
-              <Link href="/reports" className="bg-bg rounded-lg p-4 hover:bg-slate-800/80 transition-colors text-center">
-                <div className="text-2xl mb-1">📊</div>
-                <div className="text-xs font-medium text-white">Reports</div>
-                <div className="text-[10px] text-slate-500">Intelligence summary</div>
-              </Link>
+          <div className="card p-5">
+            <h2 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4">Quick Actions</h2>
+            <div className="grid grid-cols-2 gap-2.5">
+              {[
+                { href: "/upload", label: "Upload Data", sub: "CDR, FIR, Financial", icon: "\u{2191}" },
+                { href: "/agent", label: "AI Agent", sub: "Ask questions", icon: "\u{2726}" },
+                { href: "/graph", label: "Knowledge Graph", sub: "Explore network", icon: "\u{25CE}" },
+                { href: "/reports", label: "Reports", sub: "Intelligence summary", icon: "\u{25A3}" },
+              ].map(a => (
+                <Link key={a.href} href={a.href} className="bg-white/[0.02] rounded-lg p-3.5 hover:bg-white/[0.04] transition-colors border border-transparent hover:border-slate-800/60">
+                  <div className="text-lg text-blue mb-1.5">{a.icon}</div>
+                  <div className="text-xs font-medium text-white">{a.label}</div>
+                  <div className="text-[10px] text-slate-600">{a.sub}</div>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
