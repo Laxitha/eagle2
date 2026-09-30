@@ -18,9 +18,9 @@ interface Msg {
 
 const SUGGESTIONS = [
   "Who's the key connector?",
-  "Who does the top person connect to?",
+  "Describe the network",
+  "Risk assessment",
   "How many people are there?",
-  "List everyone",
 ];
 
 let _id = 1;
