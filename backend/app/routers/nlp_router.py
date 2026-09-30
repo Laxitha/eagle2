@@ -1,13 +1,16 @@
+import os
+from urllib.request import urlopen, Request
+import json
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from app.dependencies import get_current_user
-from app.services import nlp_bridge  # noqa: F401
-
-from ner_pipeline import extract_entities
-from relation_extractor import extract_relations
+from app.services import nlp_bridge  # noqa: F401 — sets up sys.path
 
 router = APIRouter(prefix="/api/nlp", tags=["nlp"])
+
+NLP_URL = os.getenv("NLP_URL")
 
 
 class ExtractRequest(BaseModel):
@@ -16,7 +19,19 @@ class ExtractRequest(BaseModel):
 
 @router.post("/extract")
 def extract(payload: ExtractRequest, user=Depends(get_current_user)):
-    """Leeben's extraction API: text in, entities + relations out."""
+    if NLP_URL:
+        req = Request(
+            f"{NLP_URL}/extract",
+            data=json.dumps({"text": payload.text}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urlopen(req) as resp:
+            return json.loads(resp.read())
+
+    from ner_pipeline import extract_entities
+    from relation_extractor import extract_relations
+
     entities = extract_entities(payload.text)
     relations = extract_relations(payload.text, entities)
     return {
