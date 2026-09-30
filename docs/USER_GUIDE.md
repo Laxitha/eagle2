@@ -1,4 +1,4 @@
-# EAGLE User Guide
+# CaseFlow User Guide
 
 ## 1. Sign in
 Log in at `/login` with an investigator account (create one via
@@ -6,7 +6,7 @@ Log in at `/login` with an investigator account (create one via
 
 ## 2. Upload case data
 Go to **Upload** and drop CDR/financial/vehicle CSVs, or FIR reports (PDF/text).
-EAGLE normalizes phone numbers, names, addresses, vehicle plates, and
+CaseFlow normalizes phone numbers, names, addresses, vehicle plates, and
 account numbers automatically, then resolves duplicate mentions of the same
 person across files.
 

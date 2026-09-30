@@ -20,7 +20,7 @@ from typing import Dict, List, Optional
 
 from .contracts import TraceEvent
 
-TRACE_DIR = Path(os.getenv("EAGLE_TRACE_DIR", "traces"))
+TRACE_DIR = Path(os.getenv("CASEFLOW_TRACE_DIR", "traces"))
 _LOCK = threading.Lock()
 _MEM: Dict[str, List[TraceEvent]] = {}
 

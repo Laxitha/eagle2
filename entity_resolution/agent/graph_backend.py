@@ -1,5 +1,5 @@
 """
-graph_backend.py — the live bridge from this agent to EAGLE's Neo4j graph.
+graph_backend.py — the live bridge from this agent to CaseFlow's Neo4j graph.
 
 The agent's build_graph / update_case_record tools were written against a
 repository object with create_entity()/create_lead()/get_case(). The real
@@ -75,7 +75,7 @@ def _load() -> bool:
     # must not depend on a database being up, and a graph write can never be
     # allowed to move the resolution numbers. build_graph then stays on its
     # in-memory path, which changes nothing about the entities or the connector.
-    if os.getenv("EAGLE_DISABLE_GRAPH") == "1":
+    if os.getenv("CASEFLOW_DISABLE_GRAPH") == "1":
         _ready = False
         return False
     backend = _find_backend_dir()

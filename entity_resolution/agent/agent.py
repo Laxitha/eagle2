@@ -27,7 +27,7 @@ from . import approval, llm, tools, trace
 from .contracts import (ApprovalRequest, Plan, Risk, Run, RunStatus, Step,
                         StepStatus, ToolResult, _id as _new_id)
 
-MAX_RECOVERY_ATTEMPTS = int(os.getenv("EAGLE_MAX_RECOVERY", "3"))
+MAX_RECOVERY_ATTEMPTS = int(os.getenv("CASEFLOW_MAX_RECOVERY", "3"))
 
 _RUNS: Dict[str, Run] = {}
 _LOCK = threading.Lock()
@@ -150,7 +150,7 @@ def _recover(run: Run, step: Step, result: ToolResult) -> List[Step]:
     # same tools, but a search that finds nothing is simply the end. Read from
     # the environment on every call so the harness can run both modes in one
     # process.
-    if os.getenv("EAGLE_BASELINE") == "1":
+    if os.getenv("CASEFLOW_BASELINE") == "1":
         trace.record(run.id, "recovery",
                      "baseline mode - no identity-aware retry available",
                      step_id=step.id)
@@ -301,7 +301,7 @@ def _execute(run: Run, step: Step) -> ToolResult:
     return result
 
 
-MAX_STEPS = int(os.getenv("EAGLE_MAX_STEPS", "30"))
+MAX_STEPS = int(os.getenv("CASEFLOW_MAX_STEPS", "30"))
 
 
 def _finish(run: Run) -> Run:

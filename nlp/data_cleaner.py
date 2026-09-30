@@ -1,5 +1,5 @@
 """
-EAGLE — CSV/DataFrame cleaning utilities.
+CaseFlow — CSV/DataFrame cleaning utilities.
 
 Applies normalizer.py functions column-by-column based on record type, drops
 obvious exact duplicates, and reports missing-value counts so problems

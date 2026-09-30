@@ -1,4 +1,4 @@
-# EAGLE API Reference
+# CaseFlow API Reference
 
 Base URL: `http://localhost:8000`. All endpoints except `/health`,
 `/api/auth/register`, `/api/auth/login` require `Authorization: Bearer <token>`.

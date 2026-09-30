@@ -16,7 +16,7 @@ from app.routers import (
     timeline,
 )
 
-app = FastAPI(title="EAGLE API", version="0.1.0")
+app = FastAPI(title="CaseFlow API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -62,4 +62,4 @@ try:
     app.include_router(agent_router)
 except Exception as _exc:  # pragma: no cover - integration seam
     import logging as _logging
-    _logging.getLogger("eagle").warning("agent router not mounted: %s", _exc)
+    _logging.getLogger("caseflow").warning("agent router not mounted: %s", _exc)

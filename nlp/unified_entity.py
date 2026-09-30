@@ -1,5 +1,5 @@
 """
-EAGLE — Cross-source entity resolution (Day 3).
+CaseFlow — Cross-source entity resolution (Day 3).
 
 Builds unified entity IDs across sources (FIR reports, CDR, financial,
 vehicle records) by union-find over resolve_entities() decisions, and adds

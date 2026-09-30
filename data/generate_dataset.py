@@ -1,5 +1,5 @@
 """
-EAGLE synthetic investigation dataset generator.
+CaseFlow synthetic investigation dataset generator.
 
 Scenario: 3 seemingly unrelated cases that share one hidden connector chain:
     Ravi Kumar (Case FIR-101, narcotics) --phone call-->
@@ -9,7 +9,7 @@ Scenario: 3 seemingly unrelated cases that share one hidden connector chain:
 Deliberately injects messy/inconsistent formatting (phone numbers, name
 casing/abbreviation, addresses) so downstream normalization and entity
 resolution have something real to clean up. Ground truth is written to
-ground_truth.md for the team to verify EAGLE's output against.
+ground_truth.md for the team to verify CaseFlow's output against.
 """
 import csv
 import random
@@ -364,9 +364,9 @@ def write_reports():
 # ---------------------------------------------------------------------------
 # Ground truth
 # ---------------------------------------------------------------------------
-GROUND_TRUTH = """# EAGLE Synthetic Dataset — Ground Truth
+GROUND_TRUTH = """# CaseFlow Synthetic Dataset — Ground Truth
 
-## Hidden connector chain (the thing EAGLE should surface)
+## Hidden connector chain (the thing CaseFlow should surface)
 
 Ravi Kumar (FIR-101, Narcotics, Chennai)
   --CALLED (6x, 04/06 & 06/06 heavy)-->
