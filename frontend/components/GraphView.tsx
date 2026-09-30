@@ -27,23 +27,23 @@ const ENTITY_COLORS: Record<string, string> = {
 };
 
 function makeLayout(nodeCount: number): any {
-  // Spacing grows with size so a big graph still reads clearly.
-  const sep = nodeCount > 60 ? 140 : nodeCount > 25 ? 110 : 90;
+  const sep = nodeCount > 60 ? 160 : nodeCount > 25 ? 130 : 120;
+  const edgeLen = nodeCount > 60 ? 180 : nodeCount > 25 ? 160 : 150;
   return {
     name: "fcose",
     quality: "proof",
     animate: false,
     fit: true,
-    padding: 60,
+    padding: 80,
     randomize: true,
     packComponents: true,
     nodeSeparation: sep,
-    nodeRepulsion: () => 9000,
-    idealEdgeLength: () => (nodeCount > 40 ? 140 : 110),
-    edgeElasticity: () => 0.45,
-    gravity: 0.2,
-    gravityRange: 3.8,
-    numIter: 2500,
+    nodeRepulsion: () => 15000,
+    idealEdgeLength: () => edgeLen,
+    edgeElasticity: () => 0.35,
+    gravity: 0.1,
+    gravityRange: 5.0,
+    numIter: 5000,
   };
 }
 
@@ -125,11 +125,11 @@ export default function GraphView({
         color: "#e2e8f0",
         "font-size": 10,
         "text-valign": "bottom",
-        "text-margin-y": 6,
+        "text-margin-y": 8,
         "text-max-width": "120px",
         "text-wrap": "ellipsis",
-        width: 26,
-        height: 26,
+        width: 30,
+        height: 30,
         "border-width": 2,
         "border-color": "#0f172a",
       },
