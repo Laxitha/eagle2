@@ -5,6 +5,7 @@ import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import GraphView from "@/components/GraphView";
 import EntityPanel from "@/components/EntityPanel";
+import AnalysisPanel from "@/components/AnalysisPanel";
 import { endpoints, GraphEdge, GraphNode } from "@/lib/api";
 import { mockNodes, mockEdges as mockEdgesData } from "@/lib/mockData";
 
@@ -17,6 +18,7 @@ export default function GraphPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [activeTypes, setActiveTypes] = useState<Set<string>>(new Set(TYPES));
+  const [showAnalysis, setShowAnalysis] = useState(true);
 
   useEffect(() => {
     endpoints
@@ -52,18 +54,35 @@ export default function GraphPage() {
       return next;
     });
 
+  const handleHighlightEntity = (entityId: string) => {
+    setSelectedId(entityId);
+  };
+
   const empty = loaded && nodes.length === 0;
 
   return (
     <AppShell>
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold text-white">Knowledge Graph</h1>
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search entities..."
-          className="bg-surface border border-slate-800 rounded-lg px-3 py-2 text-sm text-white w-64 focus:outline-none focus:border-blue"
-        />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowAnalysis(!showAnalysis)}
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+              showAnalysis
+                ? "border-purple-500/40 text-purple-400 bg-purple-500/10"
+                : "border-slate-700 text-slate-500 hover:text-slate-300"
+            }`}
+          >
+            <span className="text-[10px] font-bold">AI</span>
+            Analysis
+          </button>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search entities..."
+            className="bg-surface border border-slate-800 rounded-lg px-3 py-2 text-sm text-white w-64 focus:outline-none focus:border-blue"
+          />
+        </div>
       </div>
 
       <div className="flex gap-2 mb-4 flex-wrap">
@@ -89,11 +108,14 @@ export default function GraphPage() {
           </Link>
         </div>
       ) : (
-        <div className="flex gap-5">
+        <div className="flex gap-4">
           <div className="flex-1 bg-surface border border-slate-800 rounded-xl h-[600px]">
             <GraphView nodes={filteredNodes} edges={filteredEdges} onNodeClick={setSelectedId} />
           </div>
-          {selectedNode && (
+          {showAnalysis && (
+            <AnalysisPanel onHighlightEntity={handleHighlightEntity} />
+          )}
+          {selectedNode && !showAnalysis && (
             <EntityPanel
               node={selectedNode}
               edges={edges}
@@ -101,6 +123,17 @@ export default function GraphPage() {
               onClose={() => setSelectedId(null)}
             />
           )}
+        </div>
+      )}
+
+      {selectedNode && showAnalysis && (
+        <div className="mt-4">
+          <EntityPanel
+            node={selectedNode}
+            edges={edges}
+            nodes={nodes}
+            onClose={() => setSelectedId(null)}
+          />
         </div>
       )}
     </AppShell>
