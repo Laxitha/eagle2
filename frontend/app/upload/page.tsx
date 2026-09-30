@@ -24,20 +24,31 @@ export default function UploadPage() {
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
       setUploads((prev) => [...prev, { name: file.name, status: "uploading", progress: 40 }]);
+
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+      let parsed = false;
+
       try {
-        const { data } = await endpoints.ingestFile(file);
-        const detail =
-          data.parsed_records > 0
-            ? `${data.parsed_records} records · ${data.parsed_relations} links → ${data.totals.entities} entities`
-            : "no records recognised in this file";
-        setUploads((prev) =>
-          prev.map((u) =>
-            u.name === file.name ? { ...u, status: "done", progress: 100, detail } : u
-          )
-        );
-        setIngested((n) => n + data.parsed_records);
-      } catch {
-        const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+        const resp = await endpoints.ingestFile(file);
+        if (resp?.data) {
+          const { data } = resp;
+          const detail =
+            data.parsed_records > 0
+              ? `${data.parsed_records} records · ${data.parsed_relations} links → ${data.totals.entities} entities`
+              : "no records recognised in this file";
+          setUploads((prev) =>
+            prev.map((u) =>
+              u.name === file.name ? { ...u, status: "done", progress: 100, detail } : u
+            )
+          );
+          setIngested((n) => n + data.parsed_records);
+          parsed = true;
+        }
+      } catch (_) {
+        // backend unreachable — fall through to demo mode
+      }
+
+      if (!parsed) {
         const records = ["csv", "tsv", "txt"].includes(ext) ? 12 : ["json"].includes(ext) ? 8 : 3;
         const relations = Math.max(1, Math.floor(records * 0.6));
         const detail = `${records} records · ${relations} links → ${mockStats.entities} entities (demo)`;
