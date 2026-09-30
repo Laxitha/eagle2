@@ -5,6 +5,7 @@ import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import LeadCard from "@/components/LeadCard";
 import { endpoints, CaseLead } from "@/lib/api";
+import { mockCaseLeads } from "@/lib/mockData";
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<CaseLead[]>([]);
@@ -14,7 +15,7 @@ export default function LeadsPage() {
     endpoints
       .leads()
       .then((r) => setLeads(r.data.leads || []))
-      .catch(() => {})
+      .catch(() => setLeads(mockCaseLeads))
       .finally(() => setLoaded(true));
   }, []);
 
