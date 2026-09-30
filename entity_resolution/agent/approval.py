@@ -37,7 +37,7 @@ _PENDING: Dict[str, ApprovalRequest] = {}
 _DECIDED: Dict[str, ApprovalRequest] = {}
 
 # Set by the eval harness. Never honoured for ALWAYS_ASK.
-AUTO_APPROVE = os.getenv("EAGLE_AUTO_APPROVE", "0") == "1"
+AUTO_APPROVE = os.getenv("CASEFLOW_AUTO_APPROVE", "0") == "1"
 
 
 def resolution_tier(confidence: float) -> Risk:

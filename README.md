@@ -1,6 +1,6 @@
-# EAGLE
+# CaseFlow
 
-**Evidence → Reason → Action.** EAGLE turns fragmented investigation data — call
+**Evidence → Reason → Action.** CaseFlow turns fragmented investigation data — call
 records, financial transactions, vehicle registrations, FIR reports — into a
 unified knowledge graph that surfaces hidden connections between cases and
 ranks entities investigators should look at first.
@@ -11,7 +11,7 @@ Investigations generate data across systems that don't talk to each other:
 call detail records, bank transaction logs, vehicle registries, and
 free-text FIR reports. The same person shows up as "Ravi Kumar" in one file
 and "R. Kumar" in another. Connections between open cases go unnoticed
-because no one system sees across all of them. EAGLE ingests all of it,
+because no one system sees across all of them. CaseFlow ingests all of it,
 resolves entities across sources, builds a graph, and scores who matters.
 
 ## Architecture
@@ -103,7 +103,7 @@ See [docs/API.md](docs/API.md) for the full endpoint reference and
 
 ## Ethics & scope
 
-EAGLE is a decision-support tool for investigators, not an automated
+CaseFlow is a decision-support tool for investigators, not an automated
 accusation engine. Every relationship the graph surfaces is traceable to a
 source record and a confidence score; every priority-ranked lead requires
 human verification before action. It does not perform predictive policing

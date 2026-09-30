@@ -1,5 +1,5 @@
 """
-EAGLE — Entity resolution (fuzzy matching + deduplication).
+CaseFlow — Entity resolution (fuzzy matching + deduplication).
 
 Decides whether two records ("Ravi Kumar" from a CDR file, "R. Kumar" from a
 vehicle file) refer to the same real-world entity. Combines name similarity

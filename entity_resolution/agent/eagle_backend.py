@@ -1,5 +1,5 @@
 """
-eagle_backend.py — the live bridge from this agent to EAGLE's real NLP layer.
+eagle_backend.py — the live bridge from this agent to CaseFlow's real NLP layer.
 
 `tools.py` was written to run on fixtures, and to bind to the real resolver
 through the adapter seam at the top of that file. This module IS that binding
@@ -38,7 +38,7 @@ _ready: Optional[bool] = None
 def _find_nlp_dir() -> Optional[Path]:
     """Locate the repo's nlp/ directory: an explicit override, then a walk up
     from this file (agent lives at <repo>/entity_resolution/agent/), then CWD."""
-    env = os.getenv("EAGLE_NLP_PATH")
+    env = os.getenv("CASEFLOW_NLP_PATH")
     if env and (Path(env) / "entity_resolver.py").exists():
         return Path(env)
     here = Path(__file__).resolve()
@@ -183,7 +183,7 @@ def deduplicate(records: List[Dict]) -> Dict[str, Any]:
     Returns the agent's shape: clustered `entities`, uncertain `flagged` pairs
     carrying the resolver's own reasons, and `stats`. Built entirely on the
     real nlp/ resolver — the clustering that keeps two same-named strangers
-    apart is EAGLE's, not a stub's.
+    apart is CaseFlow's, not a stub's.
     """
     _load()
     recs = _to_records(records)
@@ -242,6 +242,6 @@ def deduplicate(records: List[Dict]) -> Dict[str, Any]:
             "input_records": len(records),
             "unique_entities": len(entities),
             "flagged_for_review": len(flagged),
-            "mode": "eagle_nlp_resolver",
+            "mode": "caseflow_nlp_resolver",
         },
     }

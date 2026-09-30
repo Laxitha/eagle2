@@ -22,8 +22,8 @@ export default function LoginPage() {
       // Demo auth: accept any non-empty credentials
       // In production this would hit the backend /api/auth/login
       await new Promise((r) => setTimeout(r, 600));
-      window.localStorage.setItem("eagle_token", "demo-token");
-      window.localStorage.setItem("eagle_user", username);
+      window.localStorage.setItem("caseflow_token", "demo-token");
+      window.localStorage.setItem("caseflow_user", username);
       router.push("/dashboard");
     } catch {
       setError("Invalid credentials");

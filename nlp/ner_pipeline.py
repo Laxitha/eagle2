@@ -1,5 +1,5 @@
 """
-EAGLE — Named Entity Recognition pipeline (Leeben's Day 1 deliverable).
+CaseFlow — Named Entity Recognition pipeline (Leeben's Day 1 deliverable).
 
 Extracts PERSON, PHONE, LOCATION, ORGANIZATION, DATE, CASE_ID, VEHICLE,
 ACCOUNT entities from free text using spaCy's statistical NER for the

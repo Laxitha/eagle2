@@ -1,6 +1,6 @@
-# EAGLE Synthetic Dataset — Ground Truth
+# CaseFlow Synthetic Dataset — Ground Truth
 
-## Hidden connector chain (the thing EAGLE should surface)
+## Hidden connector chain (the thing CaseFlow should surface)
 
 Ravi Kumar (FIR-101, Narcotics, Chennai)
   --CALLED (6x, 04/06 & 06/06 heavy)-->

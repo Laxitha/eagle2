@@ -1,4 +1,4 @@
-# CaseFlow Agent — the agent layer for EAGLE
+# CaseFlow Agent — the agent layer for CaseFlow
 
 An autonomous agent that works a case the way a district cyber-cell officer
 does: opens the FIR, pulls each source for the people named in it, works out
@@ -6,7 +6,7 @@ which records describe the same person, builds the picture, and stops to ask
 an officer before anything it cannot take back.
 
 It is a layer, not a rewrite. The entity resolution, the normalizer and the
-graph are the existing EAGLE code. This adds the loop on top.
+graph are the existing CaseFlow code. This adds the loop on top.
 
 ---
 
@@ -60,7 +60,7 @@ python -m entity_resolution.agent.eval.run_eval --json results.json
 
 ---
 
-## 3. Wiring it into the existing EAGLE repo — two edits
+## 3. Wiring it into the existing CaseFlow repo — two edits
 
 **Edit 1 — put the folder in place.** Copy `entity_resolution/agent/` so it
 sits beside the packages it uses:
@@ -138,7 +138,7 @@ Two properties worth stating plainly:
 - **Declining stops the run.** It does not skip the step and carry on — the
   run ends, and the trace says why.
 - **The unattended eval harness cannot approve an ALWAYS_ASK action.**
-  `EAGLE_AUTO_APPROVE=1` is refused for that tier. An automated run can
+  `CASEFLOW_AUTO_APPROVE=1` is refused for that tier. An automated run can
   never send an email.
 
 Every uncertain merge reaches the officer with the resolver's own reasons in
@@ -157,7 +157,7 @@ plain English, not a score:
 
 ## 6. The trace
 
-Append-only JSONL under `traces/` (set `EAGLE_TRACE_DIR` to move it). Nothing
+Append-only JSONL under `traces/` (set `CASEFLOW_TRACE_DIR` to move it). Nothing
 is ever edited or removed, so **a failure that was later recovered from still
 appears**. Written to disk as it happens, so a crashed run still leaves its
 evidence.
@@ -202,7 +202,7 @@ and still failing.
 ## 7. Baseline vs result
 
 Both columns are the same planner, the same tools and the same data. The
-baseline is the agent with the NLP layer switched off (`EAGLE_BASELINE=1`):
+baseline is the agent with the NLP layer switched off (`CASEFLOW_BASELINE=1`):
 names compared as exact strings, no honorific stripping, and a search that
 returns nothing is simply the end. That is what a plain tool-calling agent
 over the same sources actually does.
@@ -257,15 +257,15 @@ took, including the ones that failed, is in a trace the officer can read.
 
 | Variable | Default | What it does |
 |---|---|---|
-| `EAGLE_LLM` | `none` | `anthropic`, `openai`, or `none` for the fixed plan |
-| `EAGLE_LLM_MODEL` | provider default | model id |
-| `EAGLE_TRACE_DIR` | `traces` | where traces are written |
-| `EAGLE_REPORT_DIR` | `reports` | where drafted dossiers land |
-| `EAGLE_MAX_RECOVERY` | `3` | alternate spellings tried per failed search |
-| `EAGLE_MAX_STEPS` | `30` | hard step budget for one run |
-| `EAGLE_AUTO_APPROVE` | `0` | eval harness only; never honoured for ALWAYS_ASK |
-| `EAGLE_BASELINE` | `0` | switches the NLP layer off, for the comparison |
-| `EAGLE_EMAIL_REAL` | `0` | email is simulated unless this is `1` |
+| `CASEFLOW_LLM` | `none` | `anthropic`, `openai`, or `none` for the fixed plan |
+| `CASEFLOW_LLM_MODEL` | provider default | model id |
+| `CASEFLOW_TRACE_DIR` | `traces` | where traces are written |
+| `CASEFLOW_REPORT_DIR` | `reports` | where drafted dossiers land |
+| `CASEFLOW_MAX_RECOVERY` | `3` | alternate spellings tried per failed search |
+| `CASEFLOW_MAX_STEPS` | `30` | hard step budget for one run |
+| `CASEFLOW_AUTO_APPROVE` | `0` | eval harness only; never honoured for ALWAYS_ASK |
+| `CASEFLOW_BASELINE` | `0` | switches the NLP layer off, for the comparison |
+| `CASEFLOW_EMAIL_REAL` | `0` | email is simulated unless this is `1` |
 
 ---
 
@@ -274,7 +274,7 @@ took, including the ones that failed, is in a trace the officer can read.
 ```
 entity_resolution/agent/
 ├── contracts.py    the shapes everything agrees on; imports nothing
-├── tools.py        the tool registry + the adapter to existing EAGLE
+├── tools.py        the tool registry + the adapter to existing CaseFlow
 ├── llm.py          planner, with a deterministic fallback
 ├── approval.py     the three tiers and the queue
 ├── trace.py        append-only record, JSONL + readable

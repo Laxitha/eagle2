@@ -1,5 +1,5 @@
 """
-EAGLE — Normalization utilities.
+CaseFlow — Normalization utilities.
 
 Converts messy real-world investigation data (phones, names, addresses,
 vehicle numbers, account numbers) into canonical forms so that the same

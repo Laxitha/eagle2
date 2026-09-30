@@ -31,11 +31,11 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List
 
-os.environ.setdefault("EAGLE_AUTO_APPROVE", "1")   # unattended; never ALWAYS_ASK
+os.environ.setdefault("CASEFLOW_AUTO_APPROVE", "1")   # unattended; never ALWAYS_ASK
 # The eval measures the resolver, not the database. Keep the graph out of the
 # loop so the numbers are deterministic and can't be moved by Neo4j being up,
 # down, or slow. build_graph still runs on its in-memory path.
-os.environ.setdefault("EAGLE_DISABLE_GRAPH", "1")
+os.environ.setdefault("CASEFLOW_DISABLE_GRAPH", "1")
 
 from .. import agent, approval, trace                       # noqa: E402
 
@@ -128,7 +128,7 @@ def _score(case: Dict, run) -> Dict[str, Any]:
 
 
 def _run_case(case: Dict, baseline: bool) -> Dict[str, Any]:
-    os.environ["EAGLE_BASELINE"] = "1" if baseline else "0"
+    os.environ["CASEFLOW_BASELINE"] = "1" if baseline else "0"
     t0 = time.time()
     run = agent.run_goal(case["goal"], case_id=case.get("case_id"),
                          auto_approve=True)

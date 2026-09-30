@@ -9,7 +9,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [authed, setAuthed] = useState(false);
 
   useEffect(() => {
-    const token = window.localStorage.getItem("eagle_token");
+    const token = window.localStorage.getItem("caseflow_token");
     if (!token) {
       router.replace("/login");
     } else {

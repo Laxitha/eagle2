@@ -26,7 +26,7 @@ from typing import Any, Callable, Dict, List, Optional
 from .contracts import Risk, ToolResult, ToolSpec
 
 # ===========================================================================
-# ADAPTERS — the seam between this agent and the rest of EAGLE.
+# ADAPTERS — the seam between this agent and the rest of CaseFlow.
 # ===========================================================================
 
 _repo = None
@@ -37,7 +37,7 @@ _loaded = False
 
 
 def _load_backends() -> None:
-    """Import the existing EAGLE modules if they are available. Absence is not
+    """Import the existing CaseFlow modules if they are available. Absence is not
     an error — the agent runs on in-memory fixtures so the demo can't die on a
     database that didn't start.
 
@@ -192,7 +192,7 @@ def _norm(name: str) -> str:
     # compares the strings it was given, so "Shri. RAVI KUMAR" and
     # "Ravi Kumar" are two different men to it. Stripping honorifics is
     # already part of what is being measured, so the baseline must not get it.
-    if os.getenv("EAGLE_BASELINE") == "1":
+    if os.getenv("CASEFLOW_BASELINE") == "1":
         return " ".join(str(name).lower().split())
 
     _load_backends()
@@ -372,7 +372,7 @@ def get_name_variants(name: str) -> ToolResult:
 
     # Signal 2 — same-cluster lookup by normalized key, plus the initial-form
     # rule. This has to run ALONGSIDE the resolver score, not only as its
-    # fallback: EAGLE's name_similarity is built for pairwise dedup, where a
+    # fallback: CaseFlow's name_similarity is built for pairwise dedup, where a
     # shared phone or address confirms the match, so on a bare name it rates
     # an initialized form ('S. Nair' vs 'Suresh Nair') well below 0.85 and
     # would never surface it. Yet an initial is exactly how a name differs
@@ -406,7 +406,7 @@ def resolve_entities(records: List[Dict]) -> ToolResult:
     # Baseline: match identities on the exact string, which is what an agent
     # without entity resolution underneath does. No normalization, no
     # variants, no flagging. Every spelling becomes its own person.
-    if os.getenv("EAGLE_BASELINE") == "1":
+    if os.getenv("CASEFLOW_BASELINE") == "1":
         groups: Dict[str, List[Dict]] = {}
         for r in records:
             groups.setdefault(str(r.get("name", "")).strip(), []).append(r)
@@ -585,7 +585,7 @@ def draft_report(case_id: str = "", title: str = "Case dossier",
     """Writes the run's actual findings, not a placeholder. Every person in it
     carries the confidence they were resolved at, so the officer reading the
     dossier can see which names are certain and which are not."""
-    path = Path(os.getenv("EAGLE_REPORT_DIR", "reports"))
+    path = Path(os.getenv("CASEFLOW_REPORT_DIR", "reports"))
     path.mkdir(parents=True, exist_ok=True)
     f = path / f"{case_id or 'case'}_dossier.md"
 
@@ -611,9 +611,9 @@ def draft_report(case_id: str = "", title: str = "Case dossier",
 @tool("send_email", "Send an email. Always requires a person to approve.",
       Risk.ALWAYS_ASK, {"to": "recipient", "subject": "subject", "body": "body"})
 def send_email(to: str, subject: str, body: str) -> ToolResult:
-    # Deliberately does not send in the demo build. Flip EAGLE_EMAIL_REAL=1
+    # Deliberately does not send in the demo build. Flip CASEFLOW_EMAIL_REAL=1
     # and wire an SMTP client here once the approval flow has been tested.
-    if os.getenv("EAGLE_EMAIL_REAL", "0") != "1":
+    if os.getenv("CASEFLOW_EMAIL_REAL", "0") != "1":
         return ToolResult(ok=True,
                           data={"simulated": True, "to": to, "subject": subject},
                           facts={"email_to": to})

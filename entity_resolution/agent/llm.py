@@ -6,7 +6,7 @@ Two reasons the fallback exists and is not a shortcut:
   * the demo must not depend on a network call succeeding on conference wifi
   * the eval harness needs runs to be reproducible, and an LLM is not
 
-Set EAGLE_LLM=anthropic|openai|none. With a key present the LLM plans; without
+Set CASEFLOW_LLM=anthropic|openai|none. With a key present the LLM plans; without
 one, `_fallback_plan` produces a sensible plan for investigation goals. Which
 one ran is recorded on the Plan as `source`, so the trace never pretends.
 """
@@ -20,8 +20,8 @@ from typing import Any, Dict, List, Optional
 
 from .contracts import Plan, Step
 
-PROVIDER = os.getenv("EAGLE_LLM", "none").lower()
-MODEL = os.getenv("EAGLE_LLM_MODEL", "")
+PROVIDER = os.getenv("CASEFLOW_LLM", "none").lower()
+MODEL = os.getenv("CASEFLOW_LLM_MODEL", "")
 
 SYSTEM = """You plan investigative work for CaseFlow, an agent used by police \
 investigators.

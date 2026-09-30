@@ -28,8 +28,8 @@ export default function Sidebar() {
   const router = useRouter();
 
   const handleLogout = () => {
-    window.localStorage.removeItem("eagle_token");
-    window.localStorage.removeItem("eagle_user");
+    window.localStorage.removeItem("caseflow_token");
+    window.localStorage.removeItem("caseflow_user");
     router.push("/login");
   };
 

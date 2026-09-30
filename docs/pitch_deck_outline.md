@@ -1,8 +1,8 @@
-# EAGLE Pitch Deck — Outline (Farisa's Day 3 deliverable)
+# CaseFlow Pitch Deck — Outline (Farisa's Day 3 deliverable)
 
 Build this as the actual .pptx/slides; this file is the content skeleton.
 
-1. **Title** — EAGLE. Evidence → Reason → Action.
+1. **Title** — CaseFlow. Evidence → Reason → Action.
 2. **Problem** — Investigators drown in disconnected data: CDRs, financial
    records, vehicle registries, FIR reports. The same person appears under
    three different name spellings across three files nobody cross-references.
@@ -11,13 +11,13 @@ Build this as the actual .pptx/slides; this file is the content skeleton.
 4. **Existing gaps** — ICJS, DataWalk, Palantir, IBM i2: what they do well,
    where they fall short for this use case (cost, closed-source, no
    India-specific entity resolution, no built-in evidence-to-action pipeline).
-5. **Solution** — EAGLE: ingest → normalize/resolve → knowledge graph →
+5. **Solution** — CaseFlow: ingest → normalize/resolve → knowledge graph →
    priority-ranked leads → human-verified action, with every link traceable
    to a source.
 6. **Architecture** — the diagram from README.md's Architecture section.
 7. **Evidence → Reason → Action** — walk the hidden-connector-chain example
    from `data/ground_truth.md` end to end: three cases, three officers,
-   one interstate network EAGLE surfaces that no single case file would.
+   one interstate network CaseFlow surfaces that no single case file would.
 8. **Differentiators** — cross-source entity resolution tuned for Indian
    names/phones, transparent evidence trail (not a black box), human
    verification gate on every lead, open architecture (not vendor lock-in).
@@ -43,7 +43,7 @@ Build this as the actual .pptx/slides; this file is the content skeleton.
 
 ## Competitive analysis (research, Day 2)
 
-| Tool | Strength | Gap EAGLE fills |
+| Tool | Strength | Gap CaseFlow fills |
 |---|---|---|
 | ICJS | Government-integrated | No cross-source entity resolution, no priority scoring |
 | DataWalk | Strong graph analytics | Expensive, not India-context tuned |

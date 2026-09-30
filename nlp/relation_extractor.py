@@ -1,5 +1,5 @@
 """
-EAGLE — Relation extraction pipeline (Leeben's Day 2 deliverable).
+CaseFlow — Relation extraction pipeline (Leeben's Day 2 deliverable).
 
 Given text and its extracted entities (from ner_pipeline.extract_entities),
 finds relationships between PERSON/LOCATION entities: CALLED, CONTACTED,
