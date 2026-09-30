@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   ChartBarSquareIcon,
   ShareIcon,
@@ -10,6 +11,7 @@ import {
   DocumentTextIcon,
   ArrowUpTrayIcon,
   SparklesIcon,
+  ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
 const NAV = [
@@ -23,6 +25,13 @@ const NAV = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    window.localStorage.removeItem("eagle_token");
+    window.localStorage.removeItem("eagle_user");
+    router.push("/login");
+  };
 
   return (
     <aside className="w-56 shrink-0 bg-surface border-r border-slate-800 h-screen sticky top-0 flex flex-col">
@@ -48,8 +57,17 @@ export default function Sidebar() {
           );
         })}
       </nav>
+      <div className="px-3 mb-2">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors w-full"
+        >
+          <ArrowRightOnRectangleIcon className="w-5 h-5" />
+          Sign out
+        </button>
+      </div>
       <div className="px-5 py-4 text-xs text-slate-500 flex items-center gap-1.5">
-        <FolderIcon className="w-4 h-4" /> Evidence → Reason → Action
+        <FolderIcon className="w-4 h-4" /> Evidence &rarr; Reason &rarr; Action
       </div>
     </aside>
   );
