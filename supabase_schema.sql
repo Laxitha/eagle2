@@ -1,13 +1,65 @@
 -- ============================================================
 -- CaseFlow — Supabase Database Schema
 -- Paste this into Supabase SQL Editor and run
+-- Safe to re-run: drops everything first
 -- ============================================================
 
 -- Enable UUID generation
 create extension if not exists "uuid-ossp";
 
 -- ============================================================
--- 1. USERS & AUTH
+-- DROP existing objects (reverse dependency order)
+-- ============================================================
+
+drop view if exists public.leads_enriched cascade;
+drop view if exists public.case_stats cascade;
+
+drop policy if exists "Users can manage own conversations" on public.agent_conversations;
+drop policy if exists "Users can read own conversations" on public.agent_conversations;
+drop policy if exists "Authenticated users can read anomalies" on public.anomalies;
+drop policy if exists "Authenticated users can read patterns" on public.patterns;
+drop policy if exists "Authenticated users can read risk_analysis" on public.risk_analysis;
+drop policy if exists "Authenticated users can read lead_timeline" on public.lead_timeline;
+drop policy if exists "Authenticated users can read lead_cases" on public.lead_cases;
+drop policy if exists "Authenticated users can read lead_connections" on public.lead_connections;
+drop policy if exists "Authenticated users can read evidence" on public.evidence;
+drop policy if exists "Authenticated users can update leads" on public.leads;
+drop policy if exists "Authenticated users can read leads" on public.leads;
+drop policy if exists "Authenticated users can insert ingestions" on public.ingestions;
+drop policy if exists "Authenticated users can read ingestions" on public.ingestions;
+drop policy if exists "Authenticated users can read entity_cases" on public.entity_cases;
+drop policy if exists "Authenticated users can read relationships" on public.relationships;
+drop policy if exists "Authenticated users can read entities" on public.entities;
+drop policy if exists "Authenticated users can read cases" on public.cases;
+drop policy if exists "Authenticated users can read all data" on public.users;
+
+drop table if exists public.agent_conversations cascade;
+drop table if exists public.anomalies cascade;
+drop table if exists public.patterns cascade;
+drop table if exists public.risk_analysis cascade;
+drop table if exists public.lead_timeline cascade;
+drop table if exists public.lead_cases cascade;
+drop table if exists public.lead_connections cascade;
+drop table if exists public.evidence cascade;
+drop table if exists public.leads cascade;
+drop table if exists public.ingestions cascade;
+drop table if exists public.entity_cases cascade;
+drop table if exists public.relationships cascade;
+drop table if exists public.entities cascade;
+drop table if exists public.cases cascade;
+drop table if exists public.users cascade;
+
+drop type if exists severity_level cascade;
+drop type if exists pattern_type cascade;
+drop type if exists evidence_type cascade;
+drop type if exists lead_status cascade;
+drop type if exists risk_level cascade;
+drop type if exists ingestion_status cascade;
+drop type if exists ingestion_type cascade;
+drop type if exists entity_type cascade;
+
+-- ============================================================
+-- 1. USERS
 -- ============================================================
 
 create table public.users (
@@ -20,12 +72,12 @@ create table public.users (
 );
 
 -- ============================================================
--- 2. CASES (FIRs / investigations)
+-- 2. CASES
 -- ============================================================
 
 create table public.cases (
-  id text primary key,                          -- e.g. 'FIR-101'
-  name text not null,                           -- e.g. 'FIR-101 Narcotics'
+  id text primary key,
+  name text not null,
   description text,
   status text not null default 'active' check (status in ('active', 'closed', 'archived')),
   created_by uuid references public.users(id),
@@ -34,28 +86,28 @@ create table public.cases (
 );
 
 -- ============================================================
--- 3. ENTITIES (persons, phones, vehicles, accounts, locations)
+-- 3. ENTITIES
 -- ============================================================
 
 create type entity_type as enum ('Person', 'Phone', 'Case', 'Vehicle', 'Account', 'Location');
 
 create table public.entities (
-  id text primary key,                          -- e.g. 'UENT-0001'
+  id text primary key,
   label entity_type not null,
   name text not null,
-  metadata jsonb default '{}',                  -- flexible: phone number, plate, address, etc.
+  metadata jsonb default '{}',
   created_at timestamptz not null default now()
 );
 
 -- ============================================================
--- 4. RELATIONSHIPS (edges between entities)
+-- 4. RELATIONSHIPS
 -- ============================================================
 
 create table public.relationships (
   id uuid primary key default uuid_generate_v4(),
   source_id text not null references public.entities(id) on delete cascade,
   target_id text not null references public.entities(id) on delete cascade,
-  type text not null,                           -- e.g. 'CALLED', 'TRANSFERRED', 'OWNS'
+  type text not null,
   confidence numeric(4,3) not null default 1.0 check (confidence >= 0 and confidence <= 1),
   metadata jsonb default '{}',
   created_at timestamptz not null default now()
@@ -65,18 +117,18 @@ create index idx_rel_source on public.relationships(source_id);
 create index idx_rel_target on public.relationships(target_id);
 
 -- ============================================================
--- 5. ENTITY ↔ CASE junction
+-- 5. ENTITY-CASE JUNCTION
 -- ============================================================
 
 create table public.entity_cases (
   entity_id text not null references public.entities(id) on delete cascade,
   case_id text not null references public.cases(id) on delete cascade,
-  role text,                                    -- e.g. 'accused', 'witness', 'suspect'
+  role text,
   primary key (entity_id, case_id)
 );
 
 -- ============================================================
--- 6. DATA INGESTIONS (file upload history)
+-- 6. INGESTIONS
 -- ============================================================
 
 create type ingestion_type as enum ('cdr', 'financial', 'fir', 'vehicle', 'osint');
@@ -91,7 +143,7 @@ create table public.ingestions (
   entities int not null default 0,
   relationships int not null default 0,
   detail text,
-  file_url text,                                -- Supabase Storage path
+  file_url text,
   uploaded_by uuid references public.users(id),
   verified_by text,
   date timestamptz not null default now(),
@@ -99,7 +151,7 @@ create table public.ingestions (
 );
 
 -- ============================================================
--- 7. LEADS (AI-generated investigative leads)
+-- 7. LEADS
 -- ============================================================
 
 create type risk_level as enum ('critical', 'high', 'medium', 'low');
@@ -116,7 +168,7 @@ create table public.leads (
   reason text not null,
   recommended_action text,
   ai_reasoning text,
-  confidence_breakdown jsonb default '{}',       -- { network, cross_case, evidence, temporal, anomaly }
+  confidence_breakdown jsonb default '{}',
   verified_by uuid references public.users(id),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -126,7 +178,7 @@ create index idx_leads_entity on public.leads(entity_id);
 create index idx_leads_risk on public.leads(risk_level);
 
 -- ============================================================
--- 8. EVIDENCE (linked to leads)
+-- 8. EVIDENCE
 -- ============================================================
 
 create type evidence_type as enum ('cdr', 'financial', 'witness', 'vehicle', 'document', 'osint');
@@ -145,7 +197,7 @@ create table public.evidence (
 create index idx_evidence_lead on public.evidence(lead_id);
 
 -- ============================================================
--- 9. LEAD CONNECTIONS (entities connected to a lead)
+-- 9. LEAD CONNECTIONS
 -- ============================================================
 
 create table public.lead_connections (
@@ -169,7 +221,7 @@ create table public.lead_cases (
 );
 
 -- ============================================================
--- 11. LEAD TIMELINE EVENTS
+-- 11. LEAD TIMELINE
 -- ============================================================
 
 create table public.lead_timeline (
@@ -181,7 +233,7 @@ create table public.lead_timeline (
 );
 
 -- ============================================================
--- 12. RISK ANALYSIS (per-entity risk scores)
+-- 12. RISK ANALYSIS
 -- ============================================================
 
 create table public.risk_analysis (
@@ -194,7 +246,7 @@ create table public.risk_analysis (
 );
 
 -- ============================================================
--- 13. PATTERN DETECTIONS
+-- 13. PATTERNS
 -- ============================================================
 
 create type pattern_type as enum ('structuring', 'timing', 'geographic', 'communication', 'financial');
@@ -211,7 +263,7 @@ create table public.patterns (
 );
 
 -- ============================================================
--- 14. ANOMALY DETECTIONS
+-- 14. ANOMALIES
 -- ============================================================
 
 create table public.anomalies (
@@ -225,13 +277,13 @@ create table public.anomalies (
 );
 
 -- ============================================================
--- 15. AGENT CONVERSATIONS (AI chat history)
+-- 15. AGENT CONVERSATIONS
 -- ============================================================
 
 create table public.agent_conversations (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references public.users(id),
-  messages jsonb not null default '[]',          -- array of { role, content, timestamp }
+  messages jsonb not null default '[]',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -256,7 +308,7 @@ alter table public.patterns enable row level security;
 alter table public.anomalies enable row level security;
 alter table public.agent_conversations enable row level security;
 
--- Allow authenticated users to read all data
+-- Read policies
 create policy "Authenticated users can read all data" on public.users for select using (auth.role() = 'authenticated');
 create policy "Authenticated users can read cases" on public.cases for select using (auth.role() = 'authenticated');
 create policy "Authenticated users can read entities" on public.entities for select using (auth.role() = 'authenticated');
@@ -273,13 +325,13 @@ create policy "Authenticated users can read patterns" on public.patterns for sel
 create policy "Authenticated users can read anomalies" on public.anomalies for select using (auth.role() = 'authenticated');
 create policy "Users can read own conversations" on public.agent_conversations for select using (auth.uid() = user_id);
 
--- Allow authenticated users to insert/update
+-- Write policies
 create policy "Authenticated users can insert ingestions" on public.ingestions for insert with check (auth.role() = 'authenticated');
 create policy "Authenticated users can update leads" on public.leads for update using (auth.role() = 'authenticated');
 create policy "Users can manage own conversations" on public.agent_conversations for all using (auth.uid() = user_id);
 
 -- ============================================================
--- STORAGE BUCKET for uploaded files
+-- STORAGE BUCKET
 -- ============================================================
 
 insert into storage.buckets (id, name, public)
