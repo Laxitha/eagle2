@@ -14,25 +14,6 @@ create extension if not exists "uuid-ossp";
 drop view if exists public.leads_enriched cascade;
 drop view if exists public.case_stats cascade;
 
-drop policy if exists "Users can manage own conversations" on public.agent_conversations;
-drop policy if exists "Users can read own conversations" on public.agent_conversations;
-drop policy if exists "Authenticated users can read anomalies" on public.anomalies;
-drop policy if exists "Authenticated users can read patterns" on public.patterns;
-drop policy if exists "Authenticated users can read risk_analysis" on public.risk_analysis;
-drop policy if exists "Authenticated users can read lead_timeline" on public.lead_timeline;
-drop policy if exists "Authenticated users can read lead_cases" on public.lead_cases;
-drop policy if exists "Authenticated users can read lead_connections" on public.lead_connections;
-drop policy if exists "Authenticated users can read evidence" on public.evidence;
-drop policy if exists "Authenticated users can update leads" on public.leads;
-drop policy if exists "Authenticated users can read leads" on public.leads;
-drop policy if exists "Authenticated users can insert ingestions" on public.ingestions;
-drop policy if exists "Authenticated users can read ingestions" on public.ingestions;
-drop policy if exists "Authenticated users can read entity_cases" on public.entity_cases;
-drop policy if exists "Authenticated users can read relationships" on public.relationships;
-drop policy if exists "Authenticated users can read entities" on public.entities;
-drop policy if exists "Authenticated users can read cases" on public.cases;
-drop policy if exists "Authenticated users can read all data" on public.users;
-
 drop table if exists public.agent_conversations cascade;
 drop table if exists public.anomalies cascade;
 drop table if exists public.patterns cascade;
@@ -337,6 +318,12 @@ create policy "Users can manage own conversations" on public.agent_conversations
 insert into storage.buckets (id, name, public)
 values ('case-files', 'case-files', false)
 on conflict (id) do nothing;
+
+do $$ begin
+  drop policy if exists "Authenticated users can upload files" on storage.objects;
+  drop policy if exists "Authenticated users can read files" on storage.objects;
+exception when others then null;
+end $$;
 
 create policy "Authenticated users can upload files"
   on storage.objects for insert
