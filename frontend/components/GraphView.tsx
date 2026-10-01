@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CytoscapeComponent from "react-cytoscapejs";
 import cytoscape from "cytoscape";
 import fcose from "cytoscape-fcose";
 import type { GraphEdge, GraphNode } from "@/lib/api";
 
-// fcose spaces nodes without overlap and packs disconnected components neatly,
-// which base cose does not. Register once.
 if (typeof (cytoscape as any).__fcose === "undefined") {
   try {
     cytoscape.use(fcose as any);
@@ -34,7 +32,7 @@ function makeLayout(nodeCount: number): any {
     quality: "proof",
     animate: false,
     fit: true,
-    padding: 80,
+    padding: 60,
     randomize: true,
     packComponents: true,
     nodeSeparation: sep,
@@ -58,7 +56,9 @@ export default function GraphView({
 }) {
   const cyRef = useRef<cytoscape.Core | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const rafRef = useRef<number | null>(null);
+  // Force CytoscapeComponent to remount when the element set changes
+  // structurally — this ensures fcose runs fresh on the complete graph.
+  const [layoutKey, setLayoutKey] = useState(0);
 
   const elements = useMemo(
     () => [
@@ -70,44 +70,31 @@ export default function GraphView({
     [nodes, edges]
   );
 
-  // Run the layout only once the container has a real size, and re-run it
-  // whenever the data changes. Running against a 0-size canvas is what
-  // collapses everything onto a single horizontal line.
-  const relayout = () => {
-    const cy = cyRef.current;
-    const el = containerRef.current;
-    if (!cy || cy.destroyed() || !el) return;
-    const { width, height } = el.getBoundingClientRect();
-    if (width < 50 || height < 50 || cy.elements().length === 0) {
-      rafRef.current = requestAnimationFrame(relayout);
-      return;
-    }
-    cy.resize();
-    cy.layout(makeLayout(cy.nodes().length)).run();
-    cy.fit(undefined, 50);
-  };
+  const layout = useMemo(() => makeLayout(nodes.length), [nodes.length]);
 
+  // When the data changes, bump the key so the component remounts with a
+  // fresh fcose layout instead of patching elements into an existing
+  // "preset"-positioned graph.
+  const prevCountRef = useRef(elements.length);
   useEffect(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(relayout);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elements]);
+    if (elements.length > 0 && elements.length !== prevCountRef.current) {
+      prevCountRef.current = elements.length;
+      setLayoutKey((k) => k + 1);
+    }
+  }, [elements.length]);
 
+  // After mount, wait for the container to have a real size, then refit.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    let t: any;
+    let t: ReturnType<typeof setTimeout>;
     const obs = new ResizeObserver(() => {
       const cy = cyRef.current;
       if (!cy || cy.destroyed()) return;
       clearTimeout(t);
-      // On resize just refit — a full relayout on every drag is jarring.
       t = setTimeout(() => {
         cy.resize();
-        cy.fit(undefined, 50);
+        cy.fit(undefined, 40);
       }, 120);
     });
     obs.observe(el);
@@ -125,11 +112,11 @@ export default function GraphView({
         color: "#e2e8f0",
         "font-size": 10,
         "text-valign": "bottom",
-        "text-margin-y": 8,
-        "text-max-width": "120px",
+        "text-margin-y": 6,
+        "text-max-width": "100px",
         "text-wrap": "ellipsis",
-        width: 30,
-        height: 30,
+        width: 28,
+        height: 28,
         "border-width": 2,
         "border-color": "#0f172a",
       },
@@ -142,8 +129,6 @@ export default function GraphView({
         "target-arrow-color": "#475569",
         "target-arrow-shape": "triangle",
         "curve-style": "bezier",
-        // Edge labels are the main source of clutter on busy graphs — only
-        // show them when the graph is small enough to read.
         label: denseEdges ? "" : "data(label)",
         "font-size": 8,
         color: "#94a3b8",
@@ -158,10 +143,16 @@ export default function GraphView({
     },
   ];
 
+  if (elements.length === 0) {
+    return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
+  }
+
   return (
     <div ref={containerRef} style={{ width: "100%", height: "100%" }}>
       <CytoscapeComponent
+        key={layoutKey}
         elements={elements}
+        layout={layout}
         stylesheet={stylesheet}
         style={{ width: "100%", height: "100%" }}
         cy={(cy) => {
