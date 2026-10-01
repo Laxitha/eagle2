@@ -114,19 +114,33 @@ ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ingestions ENABLE ROW LEVEL SECURITY;
 
 -- Allow anon to read all tables
-CREATE POLICY IF NOT EXISTS "anon_read_entities" ON entities FOR SELECT TO anon USING (true);
-CREATE POLICY IF NOT EXISTS "anon_read_relationships" ON relationships FOR SELECT TO anon USING (true);
-CREATE POLICY IF NOT EXISTS "anon_read_risk_analysis" ON risk_analysis FOR SELECT TO anon USING (true);
-CREATE POLICY IF NOT EXISTS "anon_read_patterns" ON patterns FOR SELECT TO anon USING (true);
-CREATE POLICY IF NOT EXISTS "anon_read_anomalies" ON anomalies FOR SELECT TO anon USING (true);
-CREATE POLICY IF NOT EXISTS "anon_read_leads" ON leads FOR SELECT TO anon USING (true);
-CREATE POLICY IF NOT EXISTS "anon_read_ingestions" ON ingestions FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "anon_read_entities" ON entities;
+CREATE POLICY "anon_read_entities" ON entities FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "anon_read_relationships" ON relationships;
+CREATE POLICY "anon_read_relationships" ON relationships FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "anon_read_risk_analysis" ON risk_analysis;
+CREATE POLICY "anon_read_risk_analysis" ON risk_analysis FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "anon_read_patterns" ON patterns;
+CREATE POLICY "anon_read_patterns" ON patterns FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "anon_read_anomalies" ON anomalies;
+CREATE POLICY "anon_read_anomalies" ON anomalies FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "anon_read_leads" ON leads;
+CREATE POLICY "anon_read_leads" ON leads FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "anon_read_ingestions" ON ingestions;
+CREATE POLICY "anon_read_ingestions" ON ingestions FOR SELECT TO anon USING (true);
 
 -- Allow service_role full access (implicit, but explicit for clarity)
-CREATE POLICY IF NOT EXISTS "service_all_entities" ON entities FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "service_all_relationships" ON relationships FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "service_all_risk_analysis" ON risk_analysis FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "service_all_patterns" ON patterns FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "service_all_anomalies" ON anomalies FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "service_all_leads" ON leads FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY IF NOT EXISTS "service_all_ingestions" ON ingestions FOR ALL TO service_role USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "service_all_entities" ON entities;
+CREATE POLICY "service_all_entities" ON entities FOR ALL TO service_role USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "service_all_relationships" ON relationships;
+CREATE POLICY "service_all_relationships" ON relationships FOR ALL TO service_role USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "service_all_risk_analysis" ON risk_analysis;
+CREATE POLICY "service_all_risk_analysis" ON risk_analysis FOR ALL TO service_role USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "service_all_patterns" ON patterns;
+CREATE POLICY "service_all_patterns" ON patterns FOR ALL TO service_role USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "service_all_anomalies" ON anomalies;
+CREATE POLICY "service_all_anomalies" ON anomalies FOR ALL TO service_role USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "service_all_leads" ON leads;
+CREATE POLICY "service_all_leads" ON leads FOR ALL TO service_role USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "service_all_ingestions" ON ingestions;
+CREATE POLICY "service_all_ingestions" ON ingestions FOR ALL TO service_role USING (true) WITH CHECK (true);
