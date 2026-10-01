@@ -21,3 +21,4 @@ backend/.env
 # Editors
 .vscode/
 .idea/
+frontend/tsconfig.tsbuildinfo
