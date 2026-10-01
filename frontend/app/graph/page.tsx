@@ -7,7 +7,6 @@ import GraphView from "@/components/GraphView";
 import EntityPanel from "@/components/EntityPanel";
 import AnalysisPanel from "@/components/AnalysisPanel";
 import type { GraphEdge, GraphNode } from "@/lib/api";
-import { mockNodes, mockEdges as mockEdgesData } from "@/lib/mockData";
 import { fetchGraph } from "@/lib/supabaseData";
 
 const TYPES = ["Person", "Phone", "Case", "Vehicle", "Account", "Location"] as const;
@@ -24,18 +23,10 @@ export default function GraphPage() {
   useEffect(() => {
     fetchGraph()
       .then(({ nodes: n, edges: e }) => {
-        if (n.length > 0) {
-          setNodes(n);
-          setEdges(e);
-        } else {
-          setNodes(mockNodes);
-          setEdges(mockEdgesData);
-        }
+        setNodes(n);
+        setEdges(e);
       })
-      .catch(() => {
-        setNodes(mockNodes);
-        setEdges(mockEdgesData);
-      })
+      .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
 

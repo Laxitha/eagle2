@@ -2,19 +2,19 @@
 
 import { useEffect, useState } from "react";
 import AppShell from "@/components/AppShell";
-import { mockIngestionHistory, type IngestionHistoryItem } from "@/lib/mockData";
+import type { IngestionHistoryItem } from "@/lib/mockData";
 import { fetchIngestions } from "@/lib/supabaseData";
 
 const FILTERS = ["All", "Ingested", "Verified", "Rejected"] as const;
 
 export default function HistoryPage() {
   const [filter, setFilter] = useState<typeof FILTERS[number]>("All");
-  const [history, setHistory] = useState<IngestionHistoryItem[]>(mockIngestionHistory);
+  const [history, setHistory] = useState<IngestionHistoryItem[]>([]);
 
   useEffect(() => {
     fetchIngestions()
       .then((data) => {
-        if (data.length > 0) setHistory(data);
+        setHistory(data);
       })
       .catch(() => {});
   }, []);

@@ -5,15 +5,14 @@ import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import StatCard from "@/components/StatCard";
 import type { CaseStats } from "@/lib/api";
-import { mockStats, mockRiskAnalysis, mockPatterns, mockEnrichedLeads } from "@/lib/mockData";
 import type { RiskAnalysis, PatternDetection, EnrichedLead } from "@/lib/mockData";
 import { fetchStats, fetchRiskAnalysis, fetchPatterns, fetchLeads } from "@/lib/supabaseData";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<CaseStats | null>(null);
-  const [risks, setRisks] = useState<RiskAnalysis[]>(mockRiskAnalysis);
-  const [patterns, setPatterns] = useState<PatternDetection[]>(mockPatterns);
-  const [leads, setLeads] = useState<EnrichedLead[]>(mockEnrichedLeads);
+  const [risks, setRisks] = useState<RiskAnalysis[]>([]);
+  const [patterns, setPatterns] = useState<PatternDetection[]>([]);
+  const [leads, setLeads] = useState<EnrichedLead[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -23,10 +22,10 @@ export default function DashboardPage() {
       fetchPatterns().catch(() => []),
       fetchLeads().catch(() => []),
     ]).then(([s, r, p, l]) => {
-      setStats(s ?? mockStats);
-      if (r.length > 0) setRisks(r);
-      if (p.length > 0) setPatterns(p);
-      if (l.length > 0) setLeads(l);
+      setStats(s ?? { entities: 0, relationships: 0, cases: 0, files: 0, records: 0 });
+      setRisks(r);
+      setPatterns(p);
+      setLeads(l);
       setLoaded(true);
     });
   }, []);

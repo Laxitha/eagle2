@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import AppShell from "@/components/AppShell";
 import { endpoints } from "@/lib/api";
-import { mockStats, mockIngestionHistory, type IngestionHistoryItem } from "@/lib/mockData";
+import type { IngestionHistoryItem } from "@/lib/mockData";
 import { fetchIngestions } from "@/lib/supabaseData";
 
 type UploadState = {
@@ -21,12 +21,12 @@ export default function UploadPage() {
   const router = useRouter();
   const [uploads, setUploads] = useState<UploadState[]>([]);
   const [ingested, setIngested] = useState(0);
-  const [recentHistory, setRecentHistory] = useState<IngestionHistoryItem[]>(mockIngestionHistory.slice(0, 5));
+  const [recentHistory, setRecentHistory] = useState<IngestionHistoryItem[]>([]);
 
   useEffect(() => {
     fetchIngestions()
       .then((data) => {
-        if (data.length > 0) setRecentHistory(data.slice(0, 5));
+        setRecentHistory(data.slice(0, 5));
       })
       .catch(() => {});
   }, []);
@@ -55,19 +55,11 @@ export default function UploadPage() {
           parsed = true;
         }
       } catch (_) {
-        // backend unreachable — fall through to demo mode
-      }
-
-      if (!parsed) {
-        const records = ["csv", "tsv", "txt"].includes(ext) ? 12 : ["json"].includes(ext) ? 8 : 3;
-        const relations = Math.max(1, Math.floor(records * 0.6));
-        const detail = `${records} records · ${relations} links → ${mockStats.entities} entities (demo)`;
         setUploads((prev) =>
           prev.map((u) =>
-            u.name === file.name ? { ...u, status: "done", progress: 100, detail } : u
+            u.name === file.name ? { ...u, status: "error", progress: 100, detail: "Upload failed — check connection" } : u
           )
         );
-        setIngested((n) => n + records);
       }
     }
   }, []);

@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { endpoints } from "@/lib/api";
-import { demoAgentChat } from "@/lib/mockData";
 
 interface Details {
   focus?: string;
@@ -85,7 +84,7 @@ export default function AgentConsole() {
       id: 0,
       role: "assistant",
       text:
-        "I'm CaseFlow's AI investigation agent. I have access to your uploaded case data — **17 entities** across **3 active investigations** connected by **20 relationships**.\n\nI can analyze entities, trace financial flows, identify patterns, assess risks, and recommend investigative actions. Ask me anything about the cases, or try one of the suggestions below.",
+        "I'm CaseFlow's AI investigation agent. I can analyze your uploaded case data — entities, relationships, financial flows, patterns, and risks.\n\nUpload case files first, then ask me anything about the cases, or try one of the suggestions below.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -118,14 +117,12 @@ export default function AgentConsole() {
         },
       ]);
     } catch {
-      const demo = demoAgentChat(msg);
       setMessages((m) => [
         ...m,
         {
           id: _id++,
           role: "assistant",
-          text: demo.reply,
-          details: { focus: demo.focus, neighbours: demo.neighbours, cases: demo.cases },
+          text: "I couldn't reach the backend. Please check your connection and try again, or upload case data first.",
         },
       ]);
     } finally {

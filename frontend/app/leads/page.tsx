@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import LeadCard from "@/components/LeadCard";
-import { mockEnrichedLeads, type EnrichedLead } from "@/lib/mockData";
+import type { EnrichedLead } from "@/lib/mockData";
 import { fetchLeads, verifyLead } from "@/lib/supabaseData";
 
 export default function LeadsPage() {
@@ -15,9 +15,9 @@ export default function LeadsPage() {
   const loadLeads = useCallback(() => {
     fetchLeads()
       .then((data) => {
-        setLeads(data.length > 0 ? data : mockEnrichedLeads);
+        setLeads(data);
       })
-      .catch(() => setLeads(mockEnrichedLeads))
+      .catch(() => setLeads([]))
       .finally(() => setLoaded(true));
   }, []);
 

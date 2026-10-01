@@ -4,16 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import type { CaseStats } from "@/lib/api";
-import { mockStats, mockEnrichedLeads, mockRiskAnalysis, mockPatterns, mockAnomalies } from "@/lib/mockData";
 import type { EnrichedLead, RiskAnalysis, PatternDetection, AnomalyDetection } from "@/lib/mockData";
 import { fetchStats, fetchLeads, fetchRiskAnalysis, fetchPatterns, fetchAnomalies } from "@/lib/supabaseData";
 
 export default function ReportsPage() {
   const [stats, setStats] = useState<CaseStats | null>(null);
-  const [risks, setRisks] = useState<RiskAnalysis[]>(mockRiskAnalysis);
-  const [patterns, setPatterns] = useState<PatternDetection[]>(mockPatterns);
-  const [anomalies, setAnomalies] = useState<AnomalyDetection[]>(mockAnomalies);
-  const [leads, setLeads] = useState<EnrichedLead[]>(mockEnrichedLeads);
+  const [risks, setRisks] = useState<RiskAnalysis[]>([]);
+  const [patterns, setPatterns] = useState<PatternDetection[]>([]);
+  const [anomalies, setAnomalies] = useState<AnomalyDetection[]>([]);
+  const [leads, setLeads] = useState<EnrichedLead[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [exporting, setExporting] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -26,11 +25,11 @@ export default function ReportsPage() {
       fetchAnomalies().catch(() => []),
       fetchLeads().catch(() => []),
     ]).then(([s, r, p, a, l]) => {
-      setStats(s ?? mockStats);
-      if (r.length > 0) setRisks(r);
-      if (p.length > 0) setPatterns(p);
-      if (a.length > 0) setAnomalies(a);
-      if (l.length > 0) setLeads(l);
+      setStats(s ?? { entities: 0, relationships: 0, cases: 0, files: 0, records: 0 });
+      setRisks(r);
+      setPatterns(p);
+      setAnomalies(a);
+      setLeads(l);
       setLoaded(true);
     });
   }, []);

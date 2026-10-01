@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  mockRiskAnalysis,
-  mockPatterns,
-  mockAnomalies,
-  type RiskAnalysis,
-  type PatternDetection,
-  type AnomalyDetection,
+import type {
+  RiskAnalysis,
+  PatternDetection,
+  AnomalyDetection,
 } from "@/lib/mockData";
 import { fetchRiskAnalysis, fetchPatterns, fetchAnomalies } from "@/lib/supabaseData";
 
@@ -38,9 +35,9 @@ export default function AnalysisPanel({
   onHighlightEntity?: (id: string) => void;
 }) {
   const [tab, setTab] = useState<"risk" | "patterns" | "anomalies">("risk");
-  const [risks, setRisks] = useState<RiskAnalysis[]>(mockRiskAnalysis);
-  const [patterns, setPatterns] = useState<PatternDetection[]>(mockPatterns);
-  const [anomaliesData, setAnomaliesData] = useState<AnomalyDetection[]>(mockAnomalies);
+  const [risks, setRisks] = useState<RiskAnalysis[]>([]);
+  const [patterns, setPatterns] = useState<PatternDetection[]>([]);
+  const [anomaliesData, setAnomaliesData] = useState<AnomalyDetection[]>([]);
 
   useEffect(() => {
     Promise.all([
@@ -48,9 +45,9 @@ export default function AnalysisPanel({
       fetchPatterns().catch(() => []),
       fetchAnomalies().catch(() => []),
     ]).then(([r, p, a]) => {
-      if (r.length > 0) setRisks(r);
-      if (p.length > 0) setPatterns(p);
-      if (a.length > 0) setAnomaliesData(a);
+      setRisks(r);
+      setPatterns(p);
+      setAnomaliesData(a);
     });
   }, []);
 

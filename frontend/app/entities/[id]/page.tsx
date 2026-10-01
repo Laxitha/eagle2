@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import AppShell from "@/components/AppShell";
 import GraphView from "@/components/GraphView";
-import { mockEdges, mockNodes } from "@/lib/mockData";
 import { fetchGraph } from "@/lib/supabaseData";
 import type { GraphNode, GraphEdge } from "@/lib/api";
 
@@ -18,16 +17,14 @@ const TIMELINE = [
 ];
 
 export default function EntityDetailPage({ params }: { params: { id: string } }) {
-  const [allNodes, setAllNodes] = useState<GraphNode[]>(mockNodes);
-  const [allEdges, setAllEdges] = useState<GraphEdge[]>(mockEdges);
+  const [allNodes, setAllNodes] = useState<GraphNode[]>([]);
+  const [allEdges, setAllEdges] = useState<GraphEdge[]>([]);
 
   useEffect(() => {
     fetchGraph()
       .then(({ nodes, edges }) => {
-        if (nodes.length > 0) {
-          setAllNodes(nodes);
-          setAllEdges(edges);
-        }
+        setAllNodes(nodes);
+        setAllEdges(edges);
       })
       .catch(() => {});
   }, []);
