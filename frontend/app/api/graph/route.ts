@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseServer";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const [nodesRes, edgesRes] = await Promise.all([
     supabaseAdmin.from("entities").select("id, label, name"),
@@ -10,13 +12,13 @@ export async function GET() {
   if (nodesRes.error) return NextResponse.json({ error: nodesRes.error.message }, { status: 500 });
   if (edgesRes.error) return NextResponse.json({ error: edgesRes.error.message }, { status: 500 });
 
-  const nodes = (nodesRes.data ?? []).map((e) => ({
+  const nodes = (nodesRes.data ?? []).map((e: any) => ({
     id: e.id,
     label: e.label,
     name: e.name,
   }));
 
-  const edges = (edgesRes.data ?? []).map((r) => ({
+  const edges = (edgesRes.data ?? []).map((r: any) => ({
     source: r.source_id,
     target: r.target_id,
     type: r.type,
