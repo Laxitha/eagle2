@@ -1,43 +1,45 @@
 -- ============================================================
 -- CaseFlow — Supabase Database Schema
 -- Paste this into Supabase SQL Editor and run
--- Safe to re-run: drops everything first
+-- Safe to re-run on fresh or dirty databases
 -- ============================================================
 
--- Enable UUID generation
 create extension if not exists "uuid-ossp";
 
 -- ============================================================
--- DROP existing objects (reverse dependency order)
+-- CLEAN SLATE: drop everything in reverse dependency order
+-- Wrapped in DO blocks so missing objects don't cause errors
 -- ============================================================
 
-drop view if exists public.leads_enriched cascade;
-drop view if exists public.case_stats cascade;
+do $$ begin
+  drop view if exists public.leads_enriched cascade;
+  drop view if exists public.case_stats cascade;
 
-drop table if exists public.agent_conversations cascade;
-drop table if exists public.anomalies cascade;
-drop table if exists public.patterns cascade;
-drop table if exists public.risk_analysis cascade;
-drop table if exists public.lead_timeline cascade;
-drop table if exists public.lead_cases cascade;
-drop table if exists public.lead_connections cascade;
-drop table if exists public.evidence cascade;
-drop table if exists public.leads cascade;
-drop table if exists public.ingestions cascade;
-drop table if exists public.entity_cases cascade;
-drop table if exists public.relationships cascade;
-drop table if exists public.entities cascade;
-drop table if exists public.cases cascade;
-drop table if exists public.users cascade;
+  drop table if exists public.agent_conversations cascade;
+  drop table if exists public.anomalies cascade;
+  drop table if exists public.patterns cascade;
+  drop table if exists public.risk_analysis cascade;
+  drop table if exists public.lead_timeline cascade;
+  drop table if exists public.lead_cases cascade;
+  drop table if exists public.lead_connections cascade;
+  drop table if exists public.evidence cascade;
+  drop table if exists public.leads cascade;
+  drop table if exists public.ingestions cascade;
+  drop table if exists public.entity_cases cascade;
+  drop table if exists public.relationships cascade;
+  drop table if exists public.entities cascade;
+  drop table if exists public.cases cascade;
+  drop table if exists public.users cascade;
 
-drop type if exists severity_level cascade;
-drop type if exists pattern_type cascade;
-drop type if exists evidence_type cascade;
-drop type if exists lead_status cascade;
-drop type if exists risk_level cascade;
-drop type if exists ingestion_status cascade;
-drop type if exists ingestion_type cascade;
-drop type if exists entity_type cascade;
+  drop type if exists severity_level cascade;
+  drop type if exists pattern_type cascade;
+  drop type if exists evidence_type cascade;
+  drop type if exists lead_status cascade;
+  drop type if exists risk_level cascade;
+  drop type if exists ingestion_status cascade;
+  drop type if exists ingestion_type cascade;
+  drop type if exists entity_type cascade;
+end $$;
 
 -- ============================================================
 -- 1. USERS
@@ -289,7 +291,6 @@ alter table public.patterns enable row level security;
 alter table public.anomalies enable row level security;
 alter table public.agent_conversations enable row level security;
 
--- Read policies
 create policy "Authenticated users can read all data" on public.users for select using (auth.role() = 'authenticated');
 create policy "Authenticated users can read cases" on public.cases for select using (auth.role() = 'authenticated');
 create policy "Authenticated users can read entities" on public.entities for select using (auth.role() = 'authenticated');
@@ -306,7 +307,6 @@ create policy "Authenticated users can read patterns" on public.patterns for sel
 create policy "Authenticated users can read anomalies" on public.anomalies for select using (auth.role() = 'authenticated');
 create policy "Users can read own conversations" on public.agent_conversations for select using (auth.uid() = user_id);
 
--- Write policies
 create policy "Authenticated users can insert ingestions" on public.ingestions for insert with check (auth.role() = 'authenticated');
 create policy "Authenticated users can update leads" on public.leads for update using (auth.role() = 'authenticated');
 create policy "Users can manage own conversations" on public.agent_conversations for all using (auth.uid() = user_id);
