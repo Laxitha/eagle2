@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "",
-  timeout: 5000,
+  baseURL: "",
+  timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
@@ -166,7 +166,7 @@ export const endpoints = {
     api.post<CaseLead>(`/api/leads/${id}/verify`, { approved }),
   resetData: () => api.post(`/api/reset`),
   agentChat: (message: string, caseId?: string) =>
-    api.post<any>(`/agent/chat`, { message, case_id: caseId || null }),
+    api.post<any>(`/api/agent/chat`, { message, case_id: caseId || null }),
   login: (username: string, password: string) => {
     const form = new URLSearchParams();
     form.append("username", username);
