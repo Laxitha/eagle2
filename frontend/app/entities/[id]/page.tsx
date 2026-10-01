@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import AppShell from "@/components/AppShell";
 import GraphView from "@/components/GraphView";
 import { mockEdges, mockNodes } from "@/lib/mockData";
+import { fetchGraph } from "@/lib/supabaseData";
+import type { GraphNode, GraphEdge } from "@/lib/api";
 
 const TIMELINE = [
   { date: "06-02", activity: 1 },
@@ -15,10 +18,24 @@ const TIMELINE = [
 ];
 
 export default function EntityDetailPage({ params }: { params: { id: string } }) {
-  const node = mockNodes.find((n) => n.id === params.id) ?? mockNodes[0];
-  const connections = mockEdges.filter((e) => e.source === node.id || e.target === node.id);
+  const [allNodes, setAllNodes] = useState<GraphNode[]>(mockNodes);
+  const [allEdges, setAllEdges] = useState<GraphEdge[]>(mockEdges);
+
+  useEffect(() => {
+    fetchGraph()
+      .then(({ nodes, edges }) => {
+        if (nodes.length > 0) {
+          setAllNodes(nodes);
+          setAllEdges(edges);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const node = allNodes.find((n) => n.id === params.id) ?? allNodes[0];
+  const connections = allEdges.filter((e) => e.source === node.id || e.target === node.id);
   const neighborIds = new Set([node.id, ...connections.flatMap((c) => [c.source, c.target])]);
-  const miniNodes = mockNodes.filter((n) => neighborIds.has(n.id));
+  const miniNodes = allNodes.filter((n) => neighborIds.has(n.id));
 
   return (
     <AppShell>

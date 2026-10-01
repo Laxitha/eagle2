@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
+    "@supabase/supabase-js": "^2.117.2",
     "axios": "^1.7.3",
     "cytoscape": "^3.30.1",
     "cytoscape-fcose": "^2.2.0",

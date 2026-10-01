@@ -4,38 +4,32 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import LeadCard from "@/components/LeadCard";
-import { endpoints } from "@/lib/api";
 import { mockEnrichedLeads, type EnrichedLead } from "@/lib/mockData";
+import { fetchLeads, verifyLead } from "@/lib/supabaseData";
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<EnrichedLead[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [filter, setFilter] = useState<"all" | "critical" | "high" | "medium" | "cross_case">("all");
 
-  const fetchLeads = useCallback(() => {
-    endpoints
-      .leads()
-      .then((r) => {
-        const apiLeads = r.data.leads || [];
-        const enriched: EnrichedLead[] = apiLeads.map((l: any) => {
-          const mock = mockEnrichedLeads.find(m => m.entity_id === l.entity_id);
-          return mock ? { ...mock, ...l } : { ...mockEnrichedLeads[0], ...l };
-        });
-        setLeads(enriched);
+  const loadLeads = useCallback(() => {
+    fetchLeads()
+      .then((data) => {
+        setLeads(data.length > 0 ? data : mockEnrichedLeads);
       })
       .catch(() => setLeads(mockEnrichedLeads))
       .finally(() => setLoaded(true));
   }, []);
 
   useEffect(() => {
-    fetchLeads();
-  }, [fetchLeads]);
+    loadLeads();
+  }, [loadLeads]);
 
   const onVerify = (id: string, approved: boolean) => {
     setLeads((prev) =>
       prev.map((l) => (l.id === id ? { ...l, status: approved ? "verified" : "rejected" } : l))
     );
-    endpoints.verifyLead2(id, approved).catch(() => {});
+    verifyLead(id, approved).catch(() => {});
   };
 
   const filtered = leads.filter(l => {
@@ -60,7 +54,7 @@ export default function LeadsPage() {
         </div>
         {leads.length > 0 && (
           <button
-            onClick={fetchLeads}
+            onClick={loadLeads}
             className="text-[11px] text-slate-500 hover:text-slate-300 border border-slate-800/60 rounded-lg px-3 py-1.5 transition-colors"
           >
             Refresh

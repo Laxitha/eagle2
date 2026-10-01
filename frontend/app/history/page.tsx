@@ -1,15 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppShell from "@/components/AppShell";
-import { mockIngestionHistory } from "@/lib/mockData";
+import { mockIngestionHistory, type IngestionHistoryItem } from "@/lib/mockData";
+import { fetchIngestions } from "@/lib/supabaseData";
 
 const FILTERS = ["All", "Ingested", "Verified", "Rejected"] as const;
 
 export default function HistoryPage() {
   const [filter, setFilter] = useState<typeof FILTERS[number]>("All");
+  const [history, setHistory] = useState<IngestionHistoryItem[]>(mockIngestionHistory);
 
-  const items = mockIngestionHistory.filter(
+  useEffect(() => {
+    fetchIngestions()
+      .then((data) => {
+        if (data.length > 0) setHistory(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  const items = history.filter(
     (h) => filter === "All" || h.status.toLowerCase() === filter.toLowerCase()
   );
 

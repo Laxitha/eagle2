@@ -6,8 +6,9 @@ import AppShell from "@/components/AppShell";
 import GraphView from "@/components/GraphView";
 import EntityPanel from "@/components/EntityPanel";
 import AnalysisPanel from "@/components/AnalysisPanel";
-import { endpoints, GraphEdge, GraphNode } from "@/lib/api";
+import type { GraphEdge, GraphNode } from "@/lib/api";
 import { mockNodes, mockEdges as mockEdgesData } from "@/lib/mockData";
+import { fetchGraph } from "@/lib/supabaseData";
 
 const TYPES = ["Person", "Phone", "Case", "Vehicle", "Account", "Location"] as const;
 
@@ -21,11 +22,15 @@ export default function GraphPage() {
   const [showAnalysis, setShowAnalysis] = useState(true);
 
   useEffect(() => {
-    endpoints
-      .graph()
-      .then((r) => {
-        setNodes(r.data.nodes || []);
-        setEdges(r.data.edges || []);
+    fetchGraph()
+      .then(({ nodes: n, edges: e }) => {
+        if (n.length > 0) {
+          setNodes(n);
+          setEdges(e);
+        } else {
+          setNodes(mockNodes);
+          setEdges(mockEdgesData);
+        }
       })
       .catch(() => {
         setNodes(mockNodes);

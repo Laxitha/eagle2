@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import AppShell from "@/components/AppShell";
 import { endpoints } from "@/lib/api";
-import { mockStats, mockIngestionHistory } from "@/lib/mockData";
+import { mockStats, mockIngestionHistory, type IngestionHistoryItem } from "@/lib/mockData";
+import { fetchIngestions } from "@/lib/supabaseData";
 
 type UploadState = {
   name: string;
@@ -20,6 +21,15 @@ export default function UploadPage() {
   const router = useRouter();
   const [uploads, setUploads] = useState<UploadState[]>([]);
   const [ingested, setIngested] = useState(0);
+  const [recentHistory, setRecentHistory] = useState<IngestionHistoryItem[]>(mockIngestionHistory.slice(0, 5));
+
+  useEffect(() => {
+    fetchIngestions()
+      .then((data) => {
+        if (data.length > 0) setRecentHistory(data.slice(0, 5));
+      })
+      .catch(() => {});
+  }, []);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
@@ -74,8 +84,6 @@ export default function UploadPage() {
       "application/octet-stream": [".gml", ".graphml"],
     },
   });
-
-  const recentHistory = mockIngestionHistory.slice(0, 5);
 
   return (
     <AppShell>

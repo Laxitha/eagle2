@@ -4,23 +4,35 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import StatCard from "@/components/StatCard";
-import { endpoints, CaseStats } from "@/lib/api";
+import type { CaseStats } from "@/lib/api";
 import { mockStats, mockRiskAnalysis, mockPatterns, mockEnrichedLeads } from "@/lib/mockData";
+import type { RiskAnalysis, PatternDetection, EnrichedLead } from "@/lib/mockData";
+import { fetchStats, fetchRiskAnalysis, fetchPatterns, fetchLeads } from "@/lib/supabaseData";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<CaseStats | null>(null);
+  const [risks, setRisks] = useState<RiskAnalysis[]>(mockRiskAnalysis);
+  const [patterns, setPatterns] = useState<PatternDetection[]>(mockPatterns);
+  const [leads, setLeads] = useState<EnrichedLead[]>(mockEnrichedLeads);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    endpoints
-      .stats()
-      .then((r) => setStats(r.data))
-      .catch(() => setStats(mockStats))
-      .finally(() => setLoaded(true));
+    Promise.all([
+      fetchStats().catch(() => null),
+      fetchRiskAnalysis().catch(() => []),
+      fetchPatterns().catch(() => []),
+      fetchLeads().catch(() => []),
+    ]).then(([s, r, p, l]) => {
+      setStats(s ?? mockStats);
+      if (r.length > 0) setRisks(r);
+      if (p.length > 0) setPatterns(p);
+      if (l.length > 0) setLeads(l);
+      setLoaded(true);
+    });
   }, []);
 
   const empty = loaded && (!stats || stats.records === 0);
-  const criticalRisks = mockRiskAnalysis.filter(r => r.risk_level === "critical" || r.risk_level === "high");
+  const criticalRisks = risks.filter(r => r.risk_level === "critical" || r.risk_level === "high");
 
   return (
     <AppShell>
@@ -90,7 +102,7 @@ export default function DashboardPage() {
               <Link href="/graph" className="text-[11px] text-blue hover:underline">View graph &rarr;</Link>
             </div>
             <div className="space-y-2">
-              {mockPatterns.slice(0, 3).map(p => {
+              {patterns.slice(0, 3).map(p => {
                 const sevColor = {
                   critical: "border-l-red-500/60",
                   high: "border-l-orange-500/60",
@@ -113,7 +125,7 @@ export default function DashboardPage() {
               <Link href="/leads" className="text-[11px] text-blue hover:underline">All leads &rarr;</Link>
             </div>
             <div className="space-y-2">
-              {mockEnrichedLeads.slice(0, 3).map(l => {
+              {leads.slice(0, 3).map(l => {
                 const riskColor = {
                   critical: "text-red-400",
                   high: "text-orange-400",

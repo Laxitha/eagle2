@@ -3,20 +3,36 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
-import { endpoints, CaseStats } from "@/lib/api";
+import type { CaseStats } from "@/lib/api";
 import { mockStats, mockEnrichedLeads, mockRiskAnalysis, mockPatterns, mockAnomalies } from "@/lib/mockData";
+import type { EnrichedLead, RiskAnalysis, PatternDetection, AnomalyDetection } from "@/lib/mockData";
+import { fetchStats, fetchLeads, fetchRiskAnalysis, fetchPatterns, fetchAnomalies } from "@/lib/supabaseData";
 
 export default function ReportsPage() {
   const [stats, setStats] = useState<CaseStats | null>(null);
+  const [risks, setRisks] = useState<RiskAnalysis[]>(mockRiskAnalysis);
+  const [patterns, setPatterns] = useState<PatternDetection[]>(mockPatterns);
+  const [anomalies, setAnomalies] = useState<AnomalyDetection[]>(mockAnomalies);
+  const [leads, setLeads] = useState<EnrichedLead[]>(mockEnrichedLeads);
   const [loaded, setLoaded] = useState(false);
   const [exporting, setExporting] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    endpoints.stats()
-      .then((r) => setStats(r.data))
-      .catch(() => setStats(mockStats))
-      .finally(() => setLoaded(true));
+    Promise.all([
+      fetchStats().catch(() => null),
+      fetchRiskAnalysis().catch(() => []),
+      fetchPatterns().catch(() => []),
+      fetchAnomalies().catch(() => []),
+      fetchLeads().catch(() => []),
+    ]).then(([s, r, p, a, l]) => {
+      setStats(s ?? mockStats);
+      if (r.length > 0) setRisks(r);
+      if (p.length > 0) setPatterns(p);
+      if (a.length > 0) setAnomalies(a);
+      if (l.length > 0) setLeads(l);
+      setLoaded(true);
+    });
   }, []);
 
   const empty = loaded && (!stats || stats.records === 0);
@@ -130,7 +146,7 @@ export default function ReportsPage() {
             <h2 className="text-sm font-semibold text-white mb-1">Risk Assessment</h2>
             <p className="text-[11px] text-slate-600 mb-4">AI-scored based on network centrality, cross-case links, evidence strength, and anomaly detection</p>
             <div className="space-y-2.5">
-              {mockRiskAnalysis.map(r => {
+              {risks.map(r => {
                 const colors = {
                   critical: { bar: "bg-red-500", text: "text-red-400", badge: "bg-red-500/10 text-red-400 border-red-500/20" },
                   high: { bar: "bg-orange-500", text: "text-orange-400", badge: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
@@ -160,7 +176,7 @@ export default function ReportsPage() {
             <h2 className="text-sm font-semibold text-white mb-1">Key Findings</h2>
             <p className="text-[11px] text-slate-600 mb-4">Patterns and anomalies detected by AI analysis</p>
             <div className="space-y-2.5">
-              {mockPatterns.map(p => {
+              {patterns.map(p => {
                 const sev = {
                   critical: "border-l-red-500/50 bg-red-500/[0.02]",
                   high: "border-l-orange-500/50 bg-orange-500/[0.02]",
@@ -184,7 +200,7 @@ export default function ReportsPage() {
             <h2 className="text-sm font-semibold text-white mb-1">Anomaly Detection</h2>
             <p className="text-[11px] text-slate-600 mb-4">Statistical deviations flagged for investigation</p>
             <div className="space-y-2.5">
-              {mockAnomalies.map(a => (
+              {anomalies.map(a => (
                 <div key={a.id} className="bg-white/[0.02] rounded-lg p-3.5 border border-amber-500/15">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-medium text-white">{a.entity_name}</span>
@@ -202,14 +218,14 @@ export default function ReportsPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-sm font-semibold text-white">Investigative Leads</h2>
-                <p className="text-[11px] text-slate-600">{mockEnrichedLeads.length} leads generated, ranked by priority score</p>
+                <p className="text-[11px] text-slate-600">{leads.length} leads generated, ranked by priority score</p>
               </div>
               <Link href="/leads" className="text-[11px] text-blue hover:underline no-print">
                 View all leads &rarr;
               </Link>
             </div>
             <div className="space-y-2.5">
-              {mockEnrichedLeads.slice(0, 3).map(l => {
+              {leads.slice(0, 3).map(l => {
                 const riskColor = {
                   critical: "text-red-400",
                   high: "text-orange-400",

@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   mockRiskAnalysis,
   mockPatterns,
   mockAnomalies,
+  type RiskAnalysis,
   type PatternDetection,
+  type AnomalyDetection,
 } from "@/lib/mockData";
+import { fetchRiskAnalysis, fetchPatterns, fetchAnomalies } from "@/lib/supabaseData";
 
 const RISK_COLORS = {
   critical: "text-red-400 bg-red-500/10 border-red-500/20",
@@ -35,6 +38,21 @@ export default function AnalysisPanel({
   onHighlightEntity?: (id: string) => void;
 }) {
   const [tab, setTab] = useState<"risk" | "patterns" | "anomalies">("risk");
+  const [risks, setRisks] = useState<RiskAnalysis[]>(mockRiskAnalysis);
+  const [patterns, setPatterns] = useState<PatternDetection[]>(mockPatterns);
+  const [anomaliesData, setAnomaliesData] = useState<AnomalyDetection[]>(mockAnomalies);
+
+  useEffect(() => {
+    Promise.all([
+      fetchRiskAnalysis().catch(() => []),
+      fetchPatterns().catch(() => []),
+      fetchAnomalies().catch(() => []),
+    ]).then(([r, p, a]) => {
+      if (r.length > 0) setRisks(r);
+      if (p.length > 0) setPatterns(p);
+      if (a.length > 0) setAnomaliesData(a);
+    });
+  }, []);
 
   return (
     <div className="w-72 shrink-0 card flex flex-col max-h-[600px]">
@@ -71,7 +89,7 @@ export default function AnalysisPanel({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
-        {tab === "risk" && mockRiskAnalysis.map(r => (
+        {tab === "risk" && risks.map(r => (
           <button
             key={r.entity_id}
             onClick={() => onHighlightEntity?.(r.entity_id)}
@@ -102,7 +120,7 @@ export default function AnalysisPanel({
           </button>
         ))}
 
-        {tab === "patterns" && mockPatterns.map(p => (
+        {tab === "patterns" && patterns.map(p => (
           <div key={p.id} className={`rounded-lg border p-2.5 ${SEVERITY_COLORS[p.severity]}`}>
             <div className="flex items-center gap-1.5 mb-1">
               <div className="w-4 h-4 rounded bg-slate-800/60 flex items-center justify-center">
@@ -113,7 +131,7 @@ export default function AnalysisPanel({
             <p className="text-[10px] text-slate-500 leading-relaxed mb-1.5">{p.description}</p>
             <div className="flex flex-wrap gap-1">
               {p.entities_involved.map(eid => {
-                const entity = mockRiskAnalysis.find(r => r.entity_id === eid);
+                const entity = risks.find(r => r.entity_id === eid);
                 return (
                   <button
                     key={eid}
@@ -128,7 +146,7 @@ export default function AnalysisPanel({
           </div>
         ))}
 
-        {tab === "anomalies" && mockAnomalies.map(a => (
+        {tab === "anomalies" && anomaliesData.map(a => (
           <button
             key={a.id}
             onClick={() => onHighlightEntity?.(a.entity_id)}
