@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS entities (
 
 -- 2. RELATIONSHIPS
 CREATE TABLE IF NOT EXISTS relationships (
-  id TEXT PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   source_id TEXT NOT NULL,
   target_id TEXT NOT NULL,
   type TEXT NOT NULL DEFAULT 'LINKED_TO',

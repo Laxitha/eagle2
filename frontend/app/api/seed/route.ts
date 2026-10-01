@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseServer";
+import { randomUUID } from "crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -23,27 +24,27 @@ const ENTITIES = [
   { id: "LOC-002", label: "Location", name: "Hyderabad, TS" },
 ];
 
-const RELATIONSHIPS = [
-  { id: "rel-01", source_id: "UENT-0001", target_id: "UENT-0002", type: "CALLED", confidence: 0.95 },
-  { id: "rel-02", source_id: "UENT-0002", target_id: "UENT-0003", type: "TRANSFERRED", confidence: 0.9 },
-  { id: "rel-03", source_id: "UENT-0001", target_id: "FIR-101", type: "LINKED_TO", confidence: 1.0 },
-  { id: "rel-04", source_id: "UENT-0002", target_id: "FIR-104", type: "LINKED_TO", confidence: 1.0 },
-  { id: "rel-05", source_id: "UENT-0003", target_id: "FIR-109", type: "LINKED_TO", confidence: 1.0 },
-  { id: "rel-06", source_id: "UENT-0001", target_id: "UENT-0004", type: "CONTACTED", confidence: 0.8 },
-  { id: "rel-07", source_id: "UENT-0002", target_id: "UENT-0005", type: "CONTACTED", confidence: 0.7 },
-  { id: "rel-08", source_id: "UENT-0003", target_id: "UENT-0006", type: "VISITED", confidence: 0.75 },
-  { id: "rel-09", source_id: "UENT-0002", target_id: "ACC-SURESH", type: "OWNED", confidence: 1.0 },
-  { id: "rel-10", source_id: "UENT-0003", target_id: "ACC-ARUN", type: "OWNED", confidence: 1.0 },
-  { id: "rel-11", source_id: "ACC-SURESH", target_id: "ACC-ARUN", type: "TRANSFERRED", confidence: 0.9 },
-  { id: "rel-12", source_id: "UENT-0001", target_id: "PH-001", type: "OWNS", confidence: 1.0 },
-  { id: "rel-13", source_id: "UENT-0002", target_id: "PH-002", type: "OWNS", confidence: 1.0 },
-  { id: "rel-14", source_id: "UENT-0003", target_id: "PH-003", type: "OWNS", confidence: 1.0 },
-  { id: "rel-15", source_id: "UENT-0004", target_id: "FIR-101", type: "LINKED_TO", confidence: 0.85 },
-  { id: "rel-16", source_id: "UENT-0005", target_id: "FIR-104", type: "LINKED_TO", confidence: 0.8 },
-  { id: "rel-17", source_id: "UENT-0001", target_id: "VEH-001", type: "OWNED", confidence: 0.9 },
-  { id: "rel-18", source_id: "UENT-0001", target_id: "LOC-001", type: "VISITED", confidence: 0.85 },
-  { id: "rel-19", source_id: "UENT-0003", target_id: "LOC-002", type: "VISITED", confidence: 0.8 },
-  { id: "rel-20", source_id: "UENT-0004", target_id: "UENT-0006", type: "MET", confidence: 0.65 },
+const RELATIONSHIPS_DATA = [
+  { source_id: "UENT-0001", target_id: "UENT-0002", type: "CALLED", confidence: 0.95 },
+  { source_id: "UENT-0002", target_id: "UENT-0003", type: "TRANSFERRED", confidence: 0.9 },
+  { source_id: "UENT-0001", target_id: "FIR-101", type: "LINKED_TO", confidence: 1.0 },
+  { source_id: "UENT-0002", target_id: "FIR-104", type: "LINKED_TO", confidence: 1.0 },
+  { source_id: "UENT-0003", target_id: "FIR-109", type: "LINKED_TO", confidence: 1.0 },
+  { source_id: "UENT-0001", target_id: "UENT-0004", type: "CONTACTED", confidence: 0.8 },
+  { source_id: "UENT-0002", target_id: "UENT-0005", type: "CONTACTED", confidence: 0.7 },
+  { source_id: "UENT-0003", target_id: "UENT-0006", type: "VISITED", confidence: 0.75 },
+  { source_id: "UENT-0002", target_id: "ACC-SURESH", type: "OWNED", confidence: 1.0 },
+  { source_id: "UENT-0003", target_id: "ACC-ARUN", type: "OWNED", confidence: 1.0 },
+  { source_id: "ACC-SURESH", target_id: "ACC-ARUN", type: "TRANSFERRED", confidence: 0.9 },
+  { source_id: "UENT-0001", target_id: "PH-001", type: "OWNS", confidence: 1.0 },
+  { source_id: "UENT-0002", target_id: "PH-002", type: "OWNS", confidence: 1.0 },
+  { source_id: "UENT-0003", target_id: "PH-003", type: "OWNS", confidence: 1.0 },
+  { source_id: "UENT-0004", target_id: "FIR-101", type: "LINKED_TO", confidence: 0.85 },
+  { source_id: "UENT-0005", target_id: "FIR-104", type: "LINKED_TO", confidence: 0.8 },
+  { source_id: "UENT-0001", target_id: "VEH-001", type: "OWNED", confidence: 0.9 },
+  { source_id: "UENT-0001", target_id: "LOC-001", type: "VISITED", confidence: 0.85 },
+  { source_id: "UENT-0003", target_id: "LOC-002", type: "VISITED", confidence: 0.8 },
+  { source_id: "UENT-0004", target_id: "UENT-0006", type: "MET", confidence: 0.65 },
 ];
 
 const RISK_ANALYSIS = [
@@ -189,8 +190,10 @@ export async function POST() {
   const entRes = await supabaseAdmin.from("entities").upsert(ENTITIES, { onConflict: "id" });
   results.entities = entRes.error ? `error: ${entRes.error.message}` : `${ENTITIES.length} upserted`;
 
-  const relRes = await supabaseAdmin.from("relationships").upsert(RELATIONSHIPS, { onConflict: "id" });
-  results.relationships = relRes.error ? `error: ${relRes.error.message}` : `${RELATIONSHIPS.length} upserted`;
+  await supabaseAdmin.from("relationships").delete().neq("id", "");
+  const rels = RELATIONSHIPS_DATA.map(r => ({ id: randomUUID(), ...r }));
+  const relRes = await supabaseAdmin.from("relationships").insert(rels);
+  results.relationships = relRes.error ? `error: ${relRes.error.message}` : `${rels.length} inserted`;
 
   const riskRes = await supabaseAdmin.from("risk_analysis").upsert(RISK_ANALYSIS, { onConflict: "id" });
   results.risk_analysis = riskRes.error ? `error: ${riskRes.error.message}` : `${RISK_ANALYSIS.length} upserted`;
