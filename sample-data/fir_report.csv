@@ -1,0 +1,14 @@
+name,type,role,fir_number,station,description
+Vikram Reddy,Person,Suspect,FIR-2024-0871,Jubilee Hills PS,Primary suspect in armed robbery at Mehta Jewellers
+Anwar Sheikh,Person,Suspect,FIR-2024-0871,Jubilee Hills PS,Second suspect seen fleeing in getaway vehicle
+Priya Sharma,Person,Victim,FIR-2024-0871,Jubilee Hills PS,Owner of Mehta Jewellers - reported gold and diamond theft
+Raju Prasad,Person,Witness,FIR-2024-0871,Jubilee Hills PS,Security guard at adjacent building - saw suspects enter
+Deepak Nair,Person,Suspect,FIR-2024-0912,Banjara Hills PS,Suspected fence for stolen jewellery
+Kavitha Menon,Person,Informant,FIR-2024-0912,Banjara Hills PS,Confidential source linking Nair to pawn network
+Mehta Jewellers,Location,Crime Scene,FIR-2024-0871,Jubilee Hills PS,Road No. 36 Jubilee Hills - robbery location
+Nair Gold Exchange,Location,Suspect Premises,FIR-2024-0912,Banjara Hills PS,Suspected front for receiving stolen goods
+TS-09-AB-4521,Vehicle,Getaway Vehicle,FIR-2024-0871,Jubilee Hills PS,White Maruti Swift seen leaving crime scene at 02:20 AM
+FIR-2024-0871,Case,Primary Case,FIR-2024-0871,Jubilee Hills PS,Armed robbery at Mehta Jewellers - Rs 45 lakh gold stolen
+FIR-2024-0912,Case,Linked Case,FIR-2024-0912,Banjara Hills PS,Receiving stolen property - linked to Mehta Jewellers robbery
+ACC-DEEPAK-HDFC,Account,Bank Account,FIR-2024-0912,Banjara Hills PS,HDFC account showing suspicious deposits post-robbery
+ACC-VIKRAM-SBI,Account,Bank Account,FIR-2024-0871,Jubilee Hills PS,SBI account with large cash withdrawal before robbery
