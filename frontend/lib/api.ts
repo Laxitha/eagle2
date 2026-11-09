@@ -22,6 +22,8 @@ export interface GraphNode {
   id: string;
   label: EntityType;
   name: string;
+  /** The uploaded file the entity came from; undefined for seeded demo data. */
+  source?: string;
 }
 
 export interface GraphEdge {

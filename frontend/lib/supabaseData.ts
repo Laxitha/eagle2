@@ -16,8 +16,8 @@ export async function fetchStats(): Promise<CaseStats> {
 
 export async function fetchGraph(): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
   const [nodesRes, edgesRes] = await Promise.all([
-    supabase.from("entities").select("id, label, name"),
-    supabase.from("relationships").select("source_id, target_id, type, confidence"),
+    supabase.from("entities").select("id, label, name, source:metadata->>source_file").range(0, 9999),
+    supabase.from("relationships").select("source_id, target_id, type, confidence").range(0, 9999),
   ]);
   if (nodesRes.error) throw nodesRes.error;
   if (edgesRes.error) throw edgesRes.error;
@@ -26,6 +26,7 @@ export async function fetchGraph(): Promise<{ nodes: GraphNode[]; edges: GraphEd
     id: e.id,
     label: e.label,
     name: e.name,
+    source: e.source ?? undefined,
   }));
 
   const edges: GraphEdge[] = (edgesRes.data ?? []).map((r: any) => ({
