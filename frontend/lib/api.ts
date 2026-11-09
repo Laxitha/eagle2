@@ -156,8 +156,10 @@ export const endpoints = {
   ingestFile: (file: File) => {
     const form = new FormData();
     form.append("file", file);
-    return api.post<{ file: string; parsed_records: number; parsed_relations: number; totals: CaseStats }>(
-      `/api/ingest`, form, { headers: { "Content-Type": "multipart/form-data" } });
+    return api.post<{
+      file: string; parsed_records: number; parsed_relations: number; detail?: string;
+      new_entities?: number; matched_entities?: number; new_relations?: number; totals: CaseStats;
+    }>(`/api/ingest`, form, { headers: { "Content-Type": "multipart/form-data" }, timeout: 60000 });
   },
   stats: () => api.get<CaseStats>(`/api/stats`),
   graph: () => api.get<{ nodes: GraphNode[]; edges: GraphEdge[] }>(`/api/graph`),

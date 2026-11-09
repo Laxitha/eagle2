@@ -23,7 +23,7 @@ export default function UploadPage() {
   const [ingested, setIngested] = useState(0);
   const [recentHistory, setRecentHistory] = useState<IngestionHistoryItem[]>([]);
 
-  useEffect(() => {
+  const refreshHistory = useCallback(() => {
     fetchIngestions()
       .then((data) => {
         setRecentHistory(data.slice(0, 5));
@@ -31,38 +31,42 @@ export default function UploadPage() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    refreshHistory();
+  }, [refreshHistory]);
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
       setUploads((prev) => [...prev, { name: file.name, status: "uploading", progress: 40 }]);
 
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
-      let parsed = false;
-
       try {
-        const resp = await endpoints.ingestFile(file);
-        if (resp?.data) {
-          const { data } = resp;
-          const detail =
-            data.parsed_records > 0
-              ? `${data.parsed_records} records · ${data.parsed_relations} links → ${data.totals.entities} entities`
-              : "no records recognised in this file";
-          setUploads((prev) =>
-            prev.map((u) =>
-              u.name === file.name ? { ...u, status: "done", progress: 100, detail } : u
-            )
-          );
-          setIngested((n) => n + data.parsed_records);
-          parsed = true;
-        }
-      } catch (_) {
+        const { data } = await endpoints.ingestFile(file);
         setUploads((prev) =>
           prev.map((u) =>
-            u.name === file.name ? { ...u, status: "error", progress: 100, detail: "Upload failed — check connection" } : u
+            u.name === file.name
+              ? {
+                  ...u,
+                  status: "done",
+                  progress: 100,
+                  detail: `${data.detail ?? `${data.parsed_records} records`} Graph now has ${data.totals?.entities ?? "?"} entities.`,
+                }
+              : u
           )
         );
+        setIngested((n) => n + data.parsed_records);
+      } catch (err: any) {
+        // The server says why a file was not taken (unsupported format, no
+        // recognisable columns, scanned PDF); show that, not a generic error.
+        const reason =
+          err?.response?.data?.error ??
+          (err?.response ? `Upload failed (HTTP ${err.response.status})` : "Upload failed — check connection");
+        setUploads((prev) =>
+          prev.map((u) => (u.name === file.name ? { ...u, status: "error", progress: 100, detail: reason } : u))
+        );
       }
+      refreshHistory();
     }
-  }, []);
+  }, [refreshHistory]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

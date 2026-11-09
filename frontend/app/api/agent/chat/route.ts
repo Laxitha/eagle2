@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseServer";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const { message } = await req.json();
   if (!message) return NextResponse.json({ error: "No message" }, { status: 400 });
