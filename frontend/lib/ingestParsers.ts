@@ -69,6 +69,34 @@ export function nameKey(name: string): string {
     .trim();
 }
 
+const HONORIFIC = /^(mr|mrs|ms|miss|dr|shri|sri|smt|thiru|thirumathi|selvi|kumari|late)$/;
+
+/** A person's name split into the words that identify them and the initials
+ *  around them: "Shri. K. Divya Sumathi Mudaliar" -> core "divya mudaliar
+ *  sumathi" (sorted, so word order does not matter), initials ["k"]. */
+export function personParts(name: string): { core: string; initials: string[] } {
+  const words = name
+    .toLowerCase()
+    .replace(/[^\p{L}\p{M}\p{N}\s.]/gu, " ")
+    .split(/[\s.]+/)
+    .filter((w) => w && !HONORIFIC.test(w));
+  const full = words.filter((w) => w.length > 1);
+  const initials = words.filter((w) => w.length === 1).sort();
+  return { core: full.sort().join(" "), initials };
+}
+
+/** Same person written two ways? Only when at least two full name words match
+ *  exactly and the initials do not disagree. "Divya Sumathi Mudaliar K" and
+ *  "Divya Sumathi Mudaliar" are one person; "Murugan N" and "Murugan J" are
+ *  two, and a single shared word ("Sundaram") is never enough on its own. */
+export function samePerson(a: string, b: string): boolean {
+  const pa = personParts(a);
+  const pb = personParts(b);
+  if (!pa.core || pa.core !== pb.core || pa.core.split(" ").length < 2) return false;
+  if (!pa.initials.length || !pb.initials.length) return true;
+  return pa.initials.join() === pb.initials.join();
+}
+
 function clean(name: unknown): string {
   return String(name ?? "").replace(/_/g, " ").replace(/\s+/g, " ").trim();
 }
@@ -81,13 +109,23 @@ class Builder {
   add(rawName: unknown, type?: unknown, meta: Record<string, unknown> = {}): string | null {
     const name = clean(rawName);
     if (!name) return null;
-    const key = nameKey(name);
+    let key = nameKey(name);
     if (!key) return null;
+    const label = toEntityType(type, name);
+    // A spelling variant of a person already in this file is that person.
+    if (label === "Person" && !this.entities.has(key)) {
+      const same = Array.from(this.entities.values()).find((e) => e.label === "Person" && samePerson(e.name, name));
+      if (same) {
+        key = same.key;
+        const aliases = new Set([...((same.meta.aliases as string[]) ?? []), name]);
+        same.meta.aliases = Array.from(aliases);
+      }
+    }
     const existing = this.entities.get(key);
     if (existing) {
-      Object.assign(existing.meta, meta);
+      Object.assign(existing.meta, { ...meta, aliases: existing.meta.aliases });
     } else {
-      this.entities.set(key, { key, name, label: toEntityType(type, name), meta: { ...meta } });
+      this.entities.set(key, { key, name, label, meta: { ...meta } });
     }
     return key;
   }

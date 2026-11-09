@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseServer";
 import { randomUUID } from "crypto";
-import { nameKey, parseUpload } from "@/lib/ingestParsers";
+import { nameKey, parseUpload, samePerson } from "@/lib/ingestParsers";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -58,18 +58,26 @@ export async function POST(req: NextRequest) {
 
     // Join to what is already in the graph by name, so "Ravi Kumar" in a new
     // file is the Ravi Kumar already there, not a second node beside him.
-    const existing = await fetchAll<{ id: string; name: string }>("entities", "id, name");
+    // A person also matches a spelling variant already in the graph ("Divya
+    // Sumathi Mudaliar K" -> "Divya Sumathi Mudaliar"); see samePerson.
+    const existing = await fetchAll<{ id: string; name: string; label: string }>("entities", "id, name, label");
     const idByKey = new Map(existing.map((e) => [nameKey(e.name), e.id]));
+    const people = existing.filter((e) => e.label === "Person");
     const taken = new Set(existing.map((e) => e.id));
 
     const fileToDb = new Map<string, string>();
     const fresh: Record<string, unknown>[] = [];
     for (const e of parsed.entities) {
       let id = idByKey.get(e.key);
+      if (!id && e.label === "Person") {
+        const names = [e.name, ...((e.meta.aliases as string[]) ?? [])];
+        id = people.find((p) => names.some((n) => samePerson(p.name, n)))?.id;
+      }
       if (!id) {
         id = newId(e.label, e.name, taken);
         idByKey.set(e.key, id);
         fresh.push({ id, label: e.label, name: e.name, metadata: { ...e.meta, source_file: file.name } });
+        if (e.label === "Person") people.push({ id, name: e.name, label: e.label });
       }
       fileToDb.set(e.key, id);
     }
